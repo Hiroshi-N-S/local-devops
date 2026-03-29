@@ -1,0 +1,28 @@
+---
+# CRDs configuration
+crds:
+  # -- Whether to have Helm install the Kyverno CRDs, if the CRDs are not installed by Helm, they must be added before policies can be created
+  install: true
+
+  reportsServer:
+    # -- Kyverno reports-server is used in your cluster
+    enabled: true
+
+# Configuration
+config:
+  # -- Create the configmap.
+  create: true
+
+# Features configuration
+features:
+  policyExceptions:
+    # -- Enables the feature
+    enabled: true
+    # -- Restrict policy exceptions to a single namespace
+    # Set to "*" to allow exceptions in all namespaces
+    namespace: '*'
+
+# Admission controller configuration
+admissionController:
+  # -- (int) Desired number of pods
+  replicas: 2
