@@ -1,0 +1,65 @@
+---
+server:
+  # If true, or "-" with global.enabled true, Vault server will be installed.
+  # See vault.mode in _helpers.tpl for implementation details.
+  enabled: true
+
+  # Ingress allows ingress services to be created to allow external access
+  # from Kubernetes to access Vault pods.
+  # If deployment is on OpenShift, the following block is ignored.
+  # In order to expose the service, use the route section below
+  ingress:
+    enabled: true
+
+    annotations:
+      kubernetes.io/ingress.class: traefik
+      traefik.ingress.kubernetes.io/router.entrypoints: websecure
+
+    # Optionally use ingressClassName instead of deprecated annotation.
+    # See: https://kubernetes.io/docs/concepts/services-networking/ingress/#deprecated-annotation
+    ingressClassName: traefik
+
+    # As of Kubernetes 1.19, all Ingress Paths must have a pathType configured. The default value below should be sufficient in most cases.
+    # See: https://kubernetes.io/docs/concepts/services-networking/ingress/#path-types for other possible values.
+    pathType: Prefix
+
+    hosts:
+    - host: vault.devenv.local
+      paths:
+      - /
+
+  # authDelegator enables a cluster role binding to be attached to the service
+  # account.  This cluster role binding can be used to setup Kubernetes auth
+  # method. See https://developer.hashicorp.com/vault/docs/auth/kubernetes
+  authDelegator:
+    enabled: true
+
+  # Definition of the serviceAccount used to run Vault.
+  # These options are also used when using an external Vault server to validate
+  # Kubernetes tokens.
+  serviceAccount:
+    # Specifies whether a service account should be created
+    create: true
+
+    # Create a Secret API object to store a non-expiring token for the service account.
+    # Prior to v1.24.0, Kubernetes used to generate this secret for each service account by default.
+    # Kubernetes now recommends using short-lived tokens from the TokenRequest API or projected volumes instead if possible.
+    # For more details, see https://kubernetes.io/docs/concepts/configuration/secret/#service-account-token-secrets
+    # serviceAccount.create must be equal to 'true' in order to use this feature.
+    createSecret: true
+
+  # This configures the Vault Statefulset to create a PVC for data
+  # storage when using the file or raft backend storage engines.
+  # See https://developer.hashicorp.com/vault/docs/configuration/storage to know more
+  dataStorage:
+    enabled: false
+
+    # # Size of the PVC created
+    # size: 4Gi
+
+    # # Name of the storage class to use.  If null it will use the
+    # # configured default Storage Class.
+    # storageClass: ssd-nfs-retain
+
+    # # Access Mode of the storage device being used for the PVC
+    # accessMode: ReadWriteOnce
