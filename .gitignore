@@ -1,7 +1,7 @@
 # OS generated files
 .DS_Store
 .DS_Store?
-._*
+.*
 .Spotlight-V100
 .Trashes
 ehthumbs.db
@@ -16,3 +16,12 @@ kubernetes/k3s/k3s-configs/registries.yaml
 # Certificates
 *.key
 *.crt
+
+# Terraform
+.terraform/
+.terraform.lock.hcl
+terraform.tfstate
+terraform.tfstate.*
+*.tfvars
+*.tfvars.json
+crash.log
