@@ -67,3 +67,16 @@ graph TB
   style ESO fill:cornflowerblue,stroke:white
   style Harbor fill:steelblue,stroke:white
 ```
+
+## Quick Start
+
+This repository supports multiple deployment targets. Choose the one that fits your environment:
+
+| Target                        | Document                             |
+| ----------------------------- | ------------------------------------ |
+| RancherDesktop (k3s)          | https://docs.rancherdesktop.io/      |
+| TrueNAS Containers(LXC/Incus) | [nodes/TrueNAS.md](nodes/TrueNAS.md) |
+
+Regardless of the deployment target, the overall flow is:
+
+1. **Set up a node** — Follow the node-specific document above to provision a Kubernetes cluster (K3s).
