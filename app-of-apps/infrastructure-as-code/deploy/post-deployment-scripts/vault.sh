@@ -9,6 +9,11 @@ VAULT_AUTO_UNSEAL_SERVICE='unseal-vault.service'
 
 SCRIPT_DIR=$(dirname "$0")
 
+TERRAFORM_DIR=$(cd $SCRIPT_DIR/../terraform && pwd)
+VAULT_TERRAFORM_DIR=$TERRAFORM_DIR/vault
+VAULT_INITIAL_CONFIG_FILE=$VAULT_TERRAFORM_DIR/.vault-initial.config
+VAULT_K8S_CONFIG_FILE=$VAULT_TERRAFORM_DIR/.k8s-configs.yaml
+
 if ! command -v kubectl >/dev/null 2>&1; then
   printf "\e[31m[ERROR] %s\e[m\n" "kubectl is NOT installed."
   exit 1
@@ -168,3 +173,60 @@ sudo systemctl daemon-reload
 sudo systemctl enable $VAULT_AUTO_UNSEAL_SERVICE
 
 printf "\e[32m[INFO] %s\e[m\n" "Vault auto unseal service enabled successfully."
+
+## Applying Terraform configuration for Vault.
+
+if ! command -v terraform >/dev/null 2>&1; then
+  printf "\e[33m[WARNING] %s\e[m\n" "Terraform is NOT installed."
+
+  if [ -f /etc/apt/sources.list.d/hashicorp.list ]; then
+    printf "\e[32m[INFO] %s\e[m\n" "HashiCorp repository is already added."
+
+    printf "\e[32m[INFO] %s\e[m\n" "Removing existing HashiCorp repository to avoid potential conflicts."
+    sudo rm -f /etc/apt/sources.list.d/hashicorp.list
+    printf "\e[32m[INFO] %s\e[m\n" "HashiCorp repository removed successfully."
+  fi
+
+  if [ -f /usr/share/keyrings/hashicorp-archive-keyring.gpg ]; then
+    printf "\e[32m[INFO] %s\e[m\n" "HashiCorp GPG keyring is already added."
+
+    printf "\e[32m[INFO] %s\e[m\n" "Removing existing HashiCorp GPG keyring to avoid potential conflicts."
+    sudo rm -f /usr/share/keyrings/hashicorp-archive-keyring.gpg
+    printf "\e[32m[INFO] %s\e[m\n" "HashiCorp GPG keyring removed successfully."
+  fi
+
+  sudo apt update && sudo apt install -y --no-install-recommends \
+    gnupg \
+    lsb-release
+
+  curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+
+  echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(grep -oP '(?<=UBUNTU_CODENAME=).*' /etc/os-release || lsb_release -cs) main" |\
+  sudo tee /etc/apt/sources.list.d/hashicorp.list
+
+  sudo apt update && sudo apt install -y --no-install-recommends \
+    terraform
+
+  printf "\e[32m[INFO] %s\e[m\n" "Terraform installation completed."
+fi
+
+(
+  cd $VAULT_TERRAFORM_DIR && (
+    printf "\e[32m[INFO] %s\e[m\n" "Initializing Terraform in $VAULT_TERRAFORM_DIR."
+
+    terraform init -input=false
+
+    if [ ! -f $VAULT_TERRAFORM_DIR/variables.tfvars ]; then
+      printf "\e[33m[WARNING] %s\e[m\n" "Terraform variables file not found at $VAULT_TERRAFORM_DIR/variables.tfvars."
+      exit 1
+    fi
+
+    if terraform plan -var-file=variables.tfvars -detailed-exitcode >/dev/null 2>&1; then
+      printf "\e[32m[INFO] %s\e[m\n" "No changes to apply for Terraform configuration in $VAULT_TERRAFORM_DIR."
+    else
+      printf "\e[32m[INFO] %s\e[m\n" "Applying Terraform configuration in $VAULT_TERRAFORM_DIR."
+      terraform apply -input=false -auto-approve -var-file=variables.tfvars
+      printf "\e[32m[INFO] %s\e[m\n" "Terraform configuration in $VAULT_TERRAFORM_DIR applied successfully."      
+    fi
+  )
+)
