@@ -19,6 +19,7 @@
         - [Static IP Configuration](#static-ip-configuration)
         - [Installing necessary packages](#installing-necessary-packages)
         - [Creating a non-root user](#creating-a-non-root-user)
+    - [Setting up a Kubernetes Cluster with K3s on the LXC container](#setting-up-a-kubernetes-cluster-with-k3s-on-the-lxc-container)
 
 ## Our Goal
 
@@ -281,3 +282,20 @@ useradd -m -s /bin/bash devops
 adduser devops sudo
 echo 'devops:<PASSWORD>' | chpasswd
 ```
+
+### Setting up a Kubernetes Cluster with K3s on the LXC container
+
+To install K3s on the LXC container, use the installation script provided in the project repository.
+Ensure that the script `kubernetes/k3s/install-k3s-control-plane.sh` and its associated files (distribution-configs and k3s-configs) are copied to the container.
+
+- SSH Login to the LXC container:
+
+  ``` bash
+  ssh -p 8022 devops@<devenv.local>
+  ```
+
+- Run the installation script:
+
+  ``` bash
+  bash <PATH_TO_THIS_REPOSITORY>/kubernetes/k3s/install-k3s-control-plane.sh
+  ```
