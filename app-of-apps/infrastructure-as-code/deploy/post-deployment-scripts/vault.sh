@@ -174,6 +174,18 @@ sudo systemctl enable $VAULT_AUTO_UNSEAL_SERVICE
 
 printf "\e[32m[INFO] %s\e[m\n" "Vault auto unseal service enabled successfully."
 
+## Storing K8s Configurations for External Secrets.
+
+K8S_HOST='https://kubernetes.default.svc.cluster.local'
+K8S_CA_CERT=$(kubectl config view -o jsonpath='{.clusters[].cluster.certificate-authority-data}' --minify=true --raw)
+K8S_TOKEN_REVIEWER_JWT=$(kubectl get secret -n $VAULT_NAMESPACE -o jsonpath='{.data.token}' $VAULT_TOKEN_SECRET_NAME)
+
+cat <<EOF >$VAULT_K8S_CONFIG_FILE
+k8s-host: $K8S_HOST
+k8s-ca-cert: $K8S_CA_CERT
+k8s-token-reviewer-jwt: $K8S_TOKEN_REVIEWER_JWT
+EOF
+
 ## Applying Terraform configuration for Vault.
 
 if ! command -v terraform >/dev/null 2>&1; then
