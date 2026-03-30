@@ -112,6 +112,13 @@ if ! command -v yq >/dev/null 2>&1; then
   sudo chmod +x /usr/local/bin/yq
   printf "\e[32m[INFO] %s\e[m\n" " -> Installing yq: DONE"
 fi
+if ! command -v jq >/dev/null 2>&1; then
+  printf "\e[33m[WARN] %s\e[m\n" "jq is NOT defined."
+  printf "\e[32m[INFO] %s\e[m\n" " -> Installing jq."
+  sudo apt-get update
+  sudo apt-get install -y --no-install-recommends jq
+  printf "\e[32m[INFO] %s\e[m\n" " -> Installing jq: DONE"
+fi
 printf "\e[32m[INFO] %s\e[m\n" "Installing dependencies: DONE"
 
 #
