@@ -52,14 +52,14 @@ server:
   # storage when using the file or raft backend storage engines.
   # See https://developer.hashicorp.com/vault/docs/configuration/storage to know more
   dataStorage:
-    enabled: false
+    enabled: true
 
-    # # Size of the PVC created
-    # size: 4Gi
+    # Size of the PVC created
+    size: 4Gi
 
-    # # Name of the storage class to use.  If null it will use the
-    # # configured default Storage Class.
-    # storageClass: ssd-nfs-retain
+    # Name of the storage class to use.  If null it will use the
+    # configured default Storage Class.
+    storageClass: ssd-nfs-retain
 
-    # # Access Mode of the storage device being used for the PVC
-    # accessMode: ReadWriteOnce
+    # Access Mode of the storage device being used for the PVC
+    accessMode: ReadWriteOnce
