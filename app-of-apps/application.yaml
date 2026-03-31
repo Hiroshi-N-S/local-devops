@@ -10,7 +10,7 @@ metadata:
   finalizers:
   - resources-finalizer.argocd.argoproj.io
 spec:
-  project: devops-system
+  project: devops-project
   destination:
     name: in-cluster
     namespace: devops-system
