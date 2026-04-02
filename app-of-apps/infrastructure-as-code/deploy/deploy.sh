@@ -60,15 +60,15 @@ if [ $DEPLOY_MODE != "DELETE" ]; then
   done
 fi
 
-NFS_HOST=${NFS_HOST:-'nfs.devenv.local'}
+NFS_HOST=${NFS_HOST:-"nfs.${NODE_HOST}"}
 NFS_IP=${NFS_IP:-"${NODE_IP:-''}"}
-VAULT_HOST=${VAULT_HOST:-'vault.devenv.local'}
+VAULT_HOST=${VAULT_HOST:-"vault.${NODE_HOST}"}
 VAULT_IP=${VAULT_IP:-"${NODE_IP:-''}"}
-AUTH_HOST=${AUTH_HOST:-'auth.devenv.local'}
+AUTH_HOST=${AUTH_HOST:-"auth.${NODE_HOST}"}
 AUTH_IP=${AUTH_IP:-"${NODE_IP:-''}"}
-REGISTRY_HOST=${REGISTRY_HOST:-'registry.devenv.local'}
+REGISTRY_HOST=${REGISTRY_HOST:-"registry.${NODE_HOST}"}
 REGISTRY_IP=${REGISTRY_IP:-"${NODE_IP:-''}"}
-S3_HOST=${S3_HOST:-'s3.devenv.local'}
+S3_HOST=${S3_HOST:-"s3.${NODE_HOST}"}
 S3_IP=${S3_IP:-"${NODE_IP:-''}"}
 
 #
@@ -133,7 +133,7 @@ metadata:
   namespace: kube-system
 data:
   custom.server: |
-    devenv.local:53 {
+    ${NODE_HOST}:53 {
       errors
       health
       hosts {
@@ -141,7 +141,7 @@ data:
         $( [ -z ${VAULT_IP} ] && echo '' || echo "${VAULT_IP}  ${VAULT_HOST}" )
         fallthrough
       }
-      template ANY ANY devenv.local {
+      template ANY ANY ${NODE_HOST} {
         answer "{{ .Name }} 60 IN A ${NODE_IP}"
         fallthrough
       }
