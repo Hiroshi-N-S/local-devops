@@ -23,8 +23,8 @@ storageClasses:
     storageclass.kubernetes.io/storage-type: ssd
   parameters:
     server: nfs.devenv.local
-    share: /mnt/ssd-pool/k8s-storage-nfs/reclaim-policy-retain
-    subDir: "${pvc.metadata.namespace}-${pvc.metadata.name}"
+    share: /mnt/ssd-pool/k8s-storage-nfs
+    subDir: "retain-${pvc.metadata.namespace}-${pvc.metadata.name}"
     mountPermissions: "0777"
     onDelete: Retain
   reclaimPolicy: Retain
@@ -42,8 +42,8 @@ storageClasses:
     storageclass.kubernetes.io/storage-type: ssd
   parameters:
     server: nfs.devenv.local
-    share: /mnt/ssd-pool/k8s-storage-nfs/reclaim-policy-delete
-    subDir: "${pvc.metadata.namespace}-${pvc.metadata.name}"
+    share: /mnt/ssd-pool/k8s-storage-nfs
+    subDir: "delete-${pvc.metadata.namespace}-${pvc.metadata.name}"
     mountPermissions: "0777"
     onDelete: Delete
   reclaimPolicy: Delete
