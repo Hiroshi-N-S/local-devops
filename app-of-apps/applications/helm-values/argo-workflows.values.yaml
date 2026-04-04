@@ -290,12 +290,12 @@ extraObjects:
 - apiVersion: v1
   kind: Service
   metadata:
-    labels:
-      app: argoworkflows-postgres
     name: argoworkflows-postgres
+    labels:
+      app: "{{ .Release.Name }}-postgres"
   spec:
     selector:
-      app: argoworkflows-postgres
+      app: "{{ .Release.Name }}-postgres"
     ports:
     - protocol: TCP
       port: 5432
@@ -305,25 +305,25 @@ extraObjects:
 - apiVersion: apps/v1
   kind: StatefulSet
   metadata:
-    name: argoworkflows-postgres
+    name: "{{ .Release.Name }}-postgres"
     labels:
-      app: argoworkflows-postgres
+      app: "{{ .Release.Name }}-postgres"
   spec:
-    serviceName: argoworkflows-postgres
+    serviceName: "{{ .Release.Name }}-postgres"
     replicas: 1
     selector:
       matchLabels:
-        app: argoworkflows-postgres
+        app: "{{ .Release.Name }}-postgres"
     template:
       metadata:
         labels:
-          app: argoworkflows-postgres
+          app: "{{ .Release.Name }}-postgres"
       spec:
         securityContext:
           runAsUser: 999
           runAsGroup: 999
         containers:
-        - name: argoworkflows-postgres
+        - name: "{{ .Release.Name }}-postgres"
           image: postgres:17.9
           env:
           - name: POSTGRES_DB
