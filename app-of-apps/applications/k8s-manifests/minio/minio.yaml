@@ -140,7 +140,7 @@ spec:
     spec:
       accessModes:
       - ReadWriteOnce
-      storageClassName: ssd-nfs-retain
+      storageClassName: hdd-nfs-retain
       volumeMode: Filesystem
       resources:
         requests:
