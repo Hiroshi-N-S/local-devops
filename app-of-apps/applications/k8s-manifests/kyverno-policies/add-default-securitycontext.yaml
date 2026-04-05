@@ -11,24 +11,24 @@ metadata:
     policies.kyverno.io/description: This policy adds a default securityContext to all statefulsets that do not have one defined.
 spec:
   rules:
-  - name: add-default-securitycontext
-    match:
-      resources:
-        kinds:
-        - StatefulSet
-        - Deployment
-        - DaemonSet
-        - Job
-        - CronJob
-        namespaces:
-        - devops-system
-    mutate:
-      patchStrategicMerge:
-        spec:
-          template:
-            spec:
-              securityContext:
-                +(runAsUser): 1000
-                +(runAsGroup): 1000
-                +(runAsNonRoot): true
-                +(fsGroupChangePolicy): "OnRootMismatch"
+    - name: add-default-securitycontext
+      match:
+        resources:
+          kinds:
+            - StatefulSet
+            - Deployment
+            - DaemonSet
+            - Job
+            - CronJob
+          namespaces:
+            - devops-system
+      mutate:
+        patchStrategicMerge:
+          spec:
+            template:
+              spec:
+                securityContext:
+                  +(runAsUser): 1000
+                  +(runAsGroup): 1000
+                  +(runAsNonRoot): true
+                  +(fsGroupChangePolicy): "OnRootMismatch"

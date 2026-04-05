@@ -12,16 +12,16 @@ metadata:
 spec:
   ingressClassName: traefik
   rules:
-  - host: minio.devenv.local
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: minio
-            port:
-              number: 9001
+    - host: minio.devenv.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: minio
+                port:
+                  number: 9001
 
 ---
 apiVersion: networking.k8s.io/v1
@@ -37,16 +37,16 @@ metadata:
 spec:
   ingressClassName: traefik
   rules:
-  - host: s3.minio.devenv.local
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: minio
-            port:
-              number: 9000
+    - host: s3.minio.devenv.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: minio
+                port:
+                  number: 9000
 
 ---
 apiVersion: v1
@@ -58,14 +58,14 @@ metadata:
     app.kubernetes.io/instance: minio
 spec:
   ports:
-  - protocol: TCP
-    port: 9001
-    targetPort: http
-    name: http
-  - protocol: TCP
-    port: 9000
-    targetPort: s3-api
-    name: s3-api
+    - protocol: TCP
+      port: 9001
+      targetPort: http
+      name: http
+    - protocol: TCP
+      port: 9000
+      targetPort: s3-api
+      name: s3-api
   selector:
     app.kubernetes.io/name: minio
     app.kubernetes.io/instance: minio
@@ -96,52 +96,52 @@ spec:
         runAsUser: 1000
         runAsGroup: 1000
       containers:
-      - name: minio
-        image: minio/minio:RELEASE.2025-04-22T22-12-26Z
-        args:
-        - server
-        - /data
-        - --console-address
-        - ':9001'
-        - --address
-        - ':9000'
-        - --certs-dir
-        - '/opt/certs/'
-        ports:
-        - name: http
-          containerPort: 9001
-        - name: s3-api
-          containerPort: 9000
-        env:
-        - name: MINIO_BROWSER_REDIRECT_URL
-          value: https://minio.devenv.local:8443
-        envFrom:
-        - secretRef:
-            name: minio-env
-        volumeMounts:
-        - name: minio-data
-          mountPath: /data
-        - name: minio-certs
-          mountPath: /opt/certs/CAs/devenv.local.ca.crt
-          subPath: tls.crt
-          readOnly: true
+        - name: minio
+          image: minio/minio:RELEASE.2025-04-22T22-12-26Z
+          args:
+            - server
+            - /data
+            - --console-address
+            - ':9001'
+            - --address
+            - ':9000'
+            - --certs-dir
+            - '/opt/certs/'
+          ports:
+            - name: http
+              containerPort: 9001
+            - name: s3-api
+              containerPort: 9000
+          env:
+            - name: MINIO_BROWSER_REDIRECT_URL
+              value: https://minio.devenv.local:8443
+          envFrom:
+            - secretRef:
+                name: minio-env
+          volumeMounts:
+            - name: minio-data
+              mountPath: /data
+            - name: minio-certs
+              mountPath: /opt/certs/CAs/devenv.local.ca.crt
+              subPath: tls.crt
+              readOnly: true
       volumes:
-      - name: minio-data
-        persistentVolumeClaim:
-          claimName: minio-data
-      - name: minio-certs
-        projected:
-          sources:
-          - secret:
-              name: local-devenv-tls
+        - name: minio-data
+          persistentVolumeClaim:
+            claimName: minio-data
+        - name: minio-certs
+          projected:
+            sources:
+              - secret:
+                  name: local-devenv-tls
   volumeClaimTemplates:
-  - metadata:
-      name: minio-data
-    spec:
-      accessModes:
-      - ReadWriteOnce
-      storageClassName: hdd-nfs-retain
-      volumeMode: Filesystem
-      resources:
-        requests:
-          storage: 128Gi
+    - metadata:
+        name: minio-data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: hdd-nfs-retain
+        volumeMode: Filesystem
+        resources:
+          requests:
+            storage: 128Gi

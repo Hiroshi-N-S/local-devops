@@ -8,24 +8,24 @@ metadata:
   name: devops-project
   namespace: devops-system
   finalizers:
-  - resources-finalizer.argocd.argoproj.io/background
+    - resources-finalizer.argocd.argoproj.io/background
 spec:
   description: Local development project for Kubernetes
   sourceRepos:
-  - '*'
+    - '*'
   destinations:
-  - namespace: devops-system
-    name: in-cluster
-    server: https://kubernetes.default.svc
-  - namespace: kyverno-system
-    name: in-cluster
-    server: https://kubernetes.default.svc
-  - namespace: kube-system
-    name: in-cluster
-    server: https://kubernetes.default.svc
-  - namespace: default
-    name: in-cluster
-    server: https://kubernetes.default.svc
+    - namespace: devops-system
+      name: in-cluster
+      server: https://kubernetes.default.svc
+    - namespace: kyverno-system
+      name: in-cluster
+      server: https://kubernetes.default.svc
+    - namespace: kube-system
+      name: in-cluster
+      server: https://kubernetes.default.svc
+    - namespace: default
+      name: in-cluster
+      server: https://kubernetes.default.svc
   clusterResourceWhitelist:
-  - group: '*'
-    kind: '*'
+    - group: '*'
+      kind: '*'

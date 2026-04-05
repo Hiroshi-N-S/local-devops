@@ -8,7 +8,7 @@ metadata:
   name: app-of-devops-apps
   namespace: devops-system
   finalizers:
-  - resources-finalizer.argocd.argoproj.io
+    - resources-finalizer.argocd.argoproj.io
 spec:
   project: devops-project
   destination:
@@ -19,9 +19,9 @@ spec:
       prune: true
       selfHeal: false
     syncOptions:
-    - CreateNamespace=true
-    - ServerSideApply=true
+      - CreateNamespace=true
+      - ServerSideApply=true
   sources:
-  - path: app-of-apps/applications
-    repoURL: 'https://github.com/Hiroshi-N-S/local-devops.git'
-    targetRevision: develop/0.0.1
+    - path: app-of-apps/applications
+      repoURL: 'https://github.com/Hiroshi-N-S/local-devops.git'
+      targetRevision: develop/0.0.1

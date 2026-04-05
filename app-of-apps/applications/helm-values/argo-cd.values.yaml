@@ -46,9 +46,9 @@ configs:
         groups:
           essential: true
       requestedScopes:
-      - openid
-      - profile
-      - realm-roles
+        - openid
+        - profile
+        - realm-roles
 
     # -- Create the argocd-cm configmap for [declarative setup]
     create: true
@@ -88,53 +88,53 @@ server:
 
   # -- Additional volumeMounts to the server main container
   volumeMounts:
-  - name: local-devenv-tls-vol
-    mountPath: /etc/ssl/certs/traefik-tls.crt
-    subPath: tls.crt
-    readOnly: true
+    - name: local-devenv-tls-vol
+      mountPath: /etc/ssl/certs/traefik-tls.crt
+      subPath: tls.crt
+      readOnly: true
   
   # -- Additional volumes to the server pod
   volumes:
-  - name: local-devenv-tls-vol
-    projected:
-      sources:
-      - secret:
-          name: local-devenv-tls
+    - name: local-devenv-tls-vol
+      projected:
+        sources:
+          - secret:
+              name: local-devenv-tls
 
   # -- envFrom to pass to Argo CD server
   # @default -- '[]' (See [values.yaml])
   envFrom:
-  - secretRef:
-      name: proxy-env
+    - secretRef:
+        name: proxy-env
 
 ## Application controller
 controller:
   # -- envFrom to pass to application controller
   # @default -- '[]' (See [values.yaml])
   envFrom:
-  - secretRef:
-      name: proxy-env
+    - secretRef:
+        name: proxy-env
 
 ## Redis
 redis:
   # -- envFrom to pass to the Redis server
   # @default -- '[]' (See [values.yaml])
   envFrom:
-  - secretRef:
-      name: proxy-env
+    - secretRef:
+        name: proxy-env
 
 ## Repo Server
 repoServer:
   # -- envFrom to pass to repo server
   # @default -- '[]' (See [values.yaml])
   envFrom:
-  - secretRef:
-      name: proxy-env
+    - secretRef:
+        name: proxy-env
 
 ## Notifications controller
 notifications:
   # -- envFrom to pass to the notifications controller
   # @default -- '[]' (See [values.yaml])
   extraEnvFrom:
-  - secretRef:
-      name: proxy-env
+    - secretRef:
+        name: proxy-env

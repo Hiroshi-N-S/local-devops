@@ -9,7 +9,7 @@ metadata:
   name: devops-csi-driver-nfs
   namespace: devops-system
   finalizers:
-  - resources-finalizer.argocd.argoproj.io/background
+    - resources-finalizer.argocd.argoproj.io/background
 spec:
   project: devops-project
   destination:
@@ -20,15 +20,15 @@ spec:
       prune: true
       selfHeal: false
     syncOptions:
-    - CreateNamespace=true
-    - ServerSideApply=true
+      - CreateNamespace=true
+      - ServerSideApply=true
   sources:
-  - chart: csi-driver-nfs
-    repoURL: https://raw.githubusercontent.com/kubernetes-csi/csi-driver-nfs/master/charts
-    targetRevision: 4.13.1
-    helm:
-      valueFiles:
-      - $valueFiles/app-of-apps/applications/helm-values/csi-driver-nfs.values.yaml
-  - ref: valueFiles
-    repoURL: https://github.com/Hiroshi-N-S/local-devops.git
-    targetRevision: develop/0.0.1
+    - chart: csi-driver-nfs
+      repoURL: https://raw.githubusercontent.com/kubernetes-csi/csi-driver-nfs/master/charts
+      targetRevision: 4.13.1
+      helm:
+        valueFiles:
+          - $valueFiles/app-of-apps/applications/helm-values/csi-driver-nfs.values.yaml
+    - ref: valueFiles
+      repoURL: https://github.com/Hiroshi-N-S/local-devops.git
+      targetRevision: develop/0.0.1

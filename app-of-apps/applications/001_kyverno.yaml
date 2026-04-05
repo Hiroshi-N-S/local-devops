@@ -9,7 +9,7 @@ metadata:
   name: devops-kyverno
   namespace: devops-system
   finalizers:
-  - resources-finalizer.argocd.argoproj.io/background
+    - resources-finalizer.argocd.argoproj.io/background
 spec:
   project: devops-project
   destination:
@@ -20,15 +20,15 @@ spec:
       prune: true
       selfHeal: false
     syncOptions:
-    - CreateNamespace=true
-    - ServerSideApply=true
+      - CreateNamespace=true
+      - ServerSideApply=true
   sources:
-  - chart: kyverno
-    repoURL: https://kyverno.github.io/kyverno/
-    targetRevision: 3.7.1
-    helm:
-      valueFiles:
-      - $valueFiles/app-of-apps/applications/helm-values/kyverno.values.yaml
-  - ref: valueFiles
-    repoURL: https://github.com/Hiroshi-N-S/local-devops.git
-    targetRevision: develop/0.0.1
+    - chart: kyverno
+      repoURL: https://kyverno.github.io/kyverno/
+      targetRevision: 3.7.1
+      helm:
+        valueFiles:
+          - $valueFiles/app-of-apps/applications/helm-values/kyverno.values.yaml
+    - ref: valueFiles
+      repoURL: https://github.com/Hiroshi-N-S/local-devops.git
+      targetRevision: develop/0.0.1

@@ -17,81 +17,81 @@ node:
   name: csi-driver-nfs-node
 
 storageClasses:
-- name: ssd-nfs-retain
-  annotations:
-    storageclass.kubernetes.io/is-default-class: 'false'
-    storageclass.kubernetes.io/storage-type: ssd
-  parameters:
-    server: nfs.devenv.local
-    share: /mnt/ssd-pool/k8s-storage-nfs
-    subDir: "retain-${pvc.metadata.namespace}-${pvc.metadata.name}"
-    mountPermissions: "0777"
-    onDelete: Retain
-  reclaimPolicy: Retain
-  volumeBindingMode: Immediate
-  mountOptions:
-  - noatime
-  - nfsvers=4.1
-  - hard
-  - noresvport
-  - intr
+  - name: ssd-nfs-retain
+    annotations:
+      storageclass.kubernetes.io/is-default-class: 'false'
+      storageclass.kubernetes.io/storage-type: ssd
+    parameters:
+      server: nfs.devenv.local
+      share: /mnt/ssd-pool/k8s-storage-nfs
+      subDir: "retain-${pvc.metadata.namespace}-${pvc.metadata.name}"
+      mountPermissions: "0777"
+      onDelete: Retain
+    reclaimPolicy: Retain
+    volumeBindingMode: Immediate
+    mountOptions:
+      - noatime
+      - nfsvers=4.1
+      - hard
+      - noresvport
+      - intr
 
-- name: ssd-nfs-delete
-  annotations:
-    storageclass.kubernetes.io/is-default-class: 'false'
-    storageclass.kubernetes.io/storage-type: ssd
-  parameters:
-    server: nfs.devenv.local
-    share: /mnt/ssd-pool/k8s-storage-nfs
-    subDir: "delete-${pvc.metadata.namespace}-${pvc.metadata.name}"
-    mountPermissions: "0777"
-    onDelete: Delete
-  reclaimPolicy: Delete
-  volumeBindingMode: Immediate
-  mountOptions:
-  - noatime
-  - nfsvers=4.1
-  - hard
-  - noresvport
-  - intr
+  - name: ssd-nfs-delete
+    annotations:
+      storageclass.kubernetes.io/is-default-class: 'false'
+      storageclass.kubernetes.io/storage-type: ssd
+    parameters:
+      server: nfs.devenv.local
+      share: /mnt/ssd-pool/k8s-storage-nfs
+      subDir: "delete-${pvc.metadata.namespace}-${pvc.metadata.name}"
+      mountPermissions: "0777"
+      onDelete: Delete
+    reclaimPolicy: Delete
+    volumeBindingMode: Immediate
+    mountOptions:
+      - noatime
+      - nfsvers=4.1
+      - hard
+      - noresvport
+      - intr
 
-- name: hdd-nfs-retain
-  annotations:
-    storageclass.kubernetes.io/is-default-class: 'false'
-    storageclass.kubernetes.io/storage-type: hdd
-  parameters:
-    server: nfs.devenv.local
-    share: /mnt/hdd-pool/k8s-storage-nfs
-    subDir: "retain-${pvc.metadata.namespace}-${pvc.metadata.name}"
-    mountPermissions: "0777"
-    onDelete: Retain
-  reclaimPolicy: Retain
-  volumeBindingMode: Immediate
-  mountOptions:
-  - noatime
-  - nfsvers=4.1
-  - hard
-  - noresvport
-  - intr
+  - name: hdd-nfs-retain
+    annotations:
+      storageclass.kubernetes.io/is-default-class: 'false'
+      storageclass.kubernetes.io/storage-type: hdd
+    parameters:
+      server: nfs.devenv.local
+      share: /mnt/hdd-pool/k8s-storage-nfs
+      subDir: "retain-${pvc.metadata.namespace}-${pvc.metadata.name}"
+      mountPermissions: "0777"
+      onDelete: Retain
+    reclaimPolicy: Retain
+    volumeBindingMode: Immediate
+    mountOptions:
+      - noatime
+      - nfsvers=4.1
+      - hard
+      - noresvport
+      - intr
 
-- name: hdd-nfs-delete
-  annotations:
-    storageclass.kubernetes.io/is-default-class: 'false'
-    storageclass.kubernetes.io/storage-type: hdd
-  parameters:
-    server: nfs.devenv.local
-    share: /mnt/hdd-pool/k8s-storage-nfs
-    subDir: "delete-${pvc.metadata.namespace}-${pvc.metadata.name}"
-    mountPermissions: "0777"
-    onDelete: Delete
-  reclaimPolicy: Delete
-  volumeBindingMode: Immediate
-  mountOptions:
-  - noatime
-  - nfsvers=4.1
-  - hard
-  - noresvport
-  - intr
+  - name: hdd-nfs-delete
+    annotations:
+      storageclass.kubernetes.io/is-default-class: 'false'
+      storageclass.kubernetes.io/storage-type: hdd
+    parameters:
+      server: nfs.devenv.local
+      share: /mnt/hdd-pool/k8s-storage-nfs
+      subDir: "delete-${pvc.metadata.namespace}-${pvc.metadata.name}"
+      mountPermissions: "0777"
+      onDelete: Delete
+    reclaimPolicy: Delete
+    volumeBindingMode: Immediate
+    mountOptions:
+      - noatime
+      - nfsvers=4.1
+      - hard
+      - noresvport
+      - intr
 
 externalSnapshotter:
   enabled: false
