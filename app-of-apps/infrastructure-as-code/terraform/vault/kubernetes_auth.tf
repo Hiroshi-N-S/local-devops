@@ -4,7 +4,7 @@
 
 locals {
   # Read Kubernetes Auth Method configuration from a file.
-  k8s_config_file = fileexists("${path.module}/.k8s-configs.yaml") ? file("${path.module}/.k8s-configs.yaml") : ""
+  k8s_config_file = fileexists("~/.k8s-configs.yaml") ? file("~/.k8s-configs.yaml") : ""
 
   # Read Kubernetes CA certificate and token reviewer JWT from variables or the configuration file.  
   k8s_ca_cert = var.kubernetes_auth.config.ca_cert != "" ? var.kubernetes_auth.config.ca_cert : (

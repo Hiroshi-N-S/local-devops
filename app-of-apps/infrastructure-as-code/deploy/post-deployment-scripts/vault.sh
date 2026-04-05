@@ -11,8 +11,8 @@ SCRIPT_DIR=$(dirname "$0")
 
 TERRAFORM_DIR=$(cd $SCRIPT_DIR/../terraform && pwd)
 VAULT_TERRAFORM_DIR=$TERRAFORM_DIR/vault
-VAULT_INITIAL_CONFIG_FILE=$VAULT_TERRAFORM_DIR/.vault-initial.config
-VAULT_K8S_CONFIG_FILE=$VAULT_TERRAFORM_DIR/.k8s-configs.yaml
+VAULT_INITIAL_CONFIG_FILE=$HOME/.vault-initial.config
+VAULT_K8S_CONFIG_FILE=$HOME/.k8s-configs.yaml
 
 if ! command -v kubectl >/dev/null 2>&1; then
   printf "\e[31m[ERROR] %s\e[m\n" "kubectl is NOT installed."
@@ -84,12 +84,6 @@ VAULT_KEY_SHARES=5
 
 if $IS_SEALED == 'true'; then
   printf "\e[32m[INFO] %s\e[m\n" "Initializing Vault."
-
-  if [ ! -d $VAULT_TERRAFORM_DIR ]; then
-    printf "\e[32m[INFO] %s\e[m\n" "Creating Terraform work directory at $VAULT_TERRAFORM_DIR."
-    mkdir -p $VAULT_TERRAFORM_DIR
-    printf "\e[32m[INFO] %s\e[m\n" "Terraform work directory created successfully."
-  fi
 
   kubectl exec -n $VAULT_NAMESPACE -i $VAULT_POD_NAME -- vault operator init \
     -key-shares=$VAULT_KEY_SHARES \
