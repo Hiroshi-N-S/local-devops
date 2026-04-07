@@ -1,18 +1,17 @@
 #!/bin/bash
 set -euo pipefail
 
-VAULT_HOST=${VAULT_HOST:-'vault.devenv.local'}
-VAULT_NAMESPACE=${VAULT_NAMESPACE:-'devops-system'}
-VAULT_POD_NAME=${VAULT_POD_NAME:-'devops-vault-0'}
-VAULT_TOKEN_SECRET_NAME=${VAULT_TOKEN_SECRET_NAME:-'devops-vault-token'}
-VAULT_AUTO_UNSEAL_SERVICE='unseal-vault.service'
-
-SCRIPT_DIR=$(dirname "$0")
-
 TERRAFORM_DIR=$(cd $SCRIPT_DIR/../terraform && pwd)
+
 VAULT_TERRAFORM_DIR=$TERRAFORM_DIR/vault
 VAULT_INITIAL_CONFIG_FILE=$HOME/.vault-initial.config
 VAULT_K8S_CONFIG_FILE=$HOME/.k8s-configs.yaml
+
+VAULT_NAMESPACE=${DESTINATION_NAMESPACE:-'devops-system'}
+VAULT_POD_NAME=${VAULT_POD_NAME:-'devops-vault-0'}
+
+VAULT_TOKEN_SECRET_NAME=${VAULT_TOKEN_SECRET_NAME:-'devops-vault-token'}
+VAULT_AUTO_UNSEAL_SERVICE='unseal-vault.service'
 
 if ! command -v kubectl >/dev/null 2>&1; then
   printf "\e[31m[ERROR] %s\e[m\n" "kubectl is NOT installed."

@@ -5,11 +5,11 @@ YQ_VER=${YQ_VER:-'4.52.4'}
 APP_PREFIX=${APP_PREFIX:-'devops'}
 
 SCRIPT_DIR=$(dirname "$0")
-REPO_ROOT_DIR=$(cd $SCRIPT_DIR/../../.. && pwd)
+REPO_ROOT_DIR=$(cd $SCRIPT_DIR/../.. && pwd)
 
 POST_DEPLOYMENT_SCRIPTS_DIR=$SCRIPT_DIR/post-deployment-scripts
 
-APP_OF_APPS_DIR=$(cd $SCRIPT_DIR/../.. && pwd)
+APP_OF_APPS_DIR=${APP_OF_APPS_DIR:-"$REPO_ROOT_DIR/app-of-apps"}
 PROJ_DIR=$APP_OF_APPS_DIR/projects
 APPS_DIR=$APP_OF_APPS_DIR/applications
 
