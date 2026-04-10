@@ -4,6 +4,10 @@ crds:
   # -- Install and upgrade CRDs
   install: true
 
+  # -- Use full CRDs with complete OpenAPI schemas. When false, uses minified CRDs with x-kubernetes-preserve-unknown-fields.
+  # Full CRDs are very large and are installed via a pre-install/pre-upgrade hook Job that uses server-side apply.
+  full: false
+
 server:
   # -- Deploy the Argo Server
   enabled: true
@@ -136,12 +140,6 @@ controller:
 
   # -- Limits the maximum number of incomplete workflows in a namespace
   namespaceParallelism: 8
-
-  # -- Specify all namespaces where this workflow controller instance will manage
-  # workflows. This controls where the service account and RBAC resources will
-  # be created. Only valid when singleNamespace is false.
-  workflowNamespaces:
-    - default
 
   # -- enable Workflow Archive to store the status of workflows. Postgres and MySQL (>= 5.7.8) are available.
   ## Ref: https://argo-workflows.readthedocs.io/en/stable/workflow-archive/
