@@ -139,7 +139,10 @@ controller:
     create: true
 
   # -- Limits the maximum number of incomplete workflows in a namespace
-  namespaceParallelism: 8
+  namespaceParallelism: 4
+
+  # -- Number of workflow workers
+  workflowWorkers: 4
 
   # -- enable Workflow Archive to store the status of workflows. Postgres and MySQL (>= 5.7.8) are available.
   ## Ref: https://argo-workflows.readthedocs.io/en/stable/workflow-archive/
