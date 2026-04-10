@@ -20,6 +20,25 @@ kubernetes_auth = {
       path                              = "data/*"
       capabilities                      = [ "read", "list" ]
       data = {
+        argoworkflows-artifact-repositories = {
+          "default-s3-artifact-repository" = <<-EOT
+            archiveLogs: true
+            s3:
+              bucket: <SAMPLE>
+              endpoint: <SAMPLE>
+              insecure: false
+              accessKeySecret:
+                name: argoworkflows-artifact-credential
+                key: accesskey
+              secretKeySecret:
+                name: argoworkflows-artifact-credential
+                key: secretkey
+            EOT
+        }
+        argoworkflows-artifact-credential = {
+          "accesskey"                   = "<SAMPLE>"
+          "secretkey"                   = "<SAMPLE>"
+        }
         argoworkflows-sso = {
           "client_id"                   = "<SAMPLE>"
           "client_secret"               = "<SAMPLE>"
