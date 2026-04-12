@@ -101,40 +101,10 @@ server:
           - secret:
               name: local-devenv-tls
 
-  # -- envFrom to pass to Argo CD server
-  # @default -- '[]' (See [values.yaml])
-  envFrom:
-    - secretRef:
-        name: proxy-env
-
-## Application controller
-controller:
-  # -- envFrom to pass to application controller
-  # @default -- '[]' (See [values.yaml])
-  envFrom:
-    - secretRef:
-        name: proxy-env
-
-## Redis
-redis:
-  # -- envFrom to pass to the Redis server
-  # @default -- '[]' (See [values.yaml])
-  envFrom:
-    - secretRef:
-        name: proxy-env
-
 ## Repo Server
 repoServer:
   # -- envFrom to pass to repo server
   # @default -- '[]' (See [values.yaml])
   envFrom:
-    - secretRef:
-        name: proxy-env
-
-## Notifications controller
-notifications:
-  # -- envFrom to pass to the notifications controller
-  # @default -- '[]' (See [values.yaml])
-  extraEnvFrom:
     - secretRef:
         name: proxy-env
