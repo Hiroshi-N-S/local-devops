@@ -9,18 +9,20 @@ of the local development environment.
 | --------------------------------------------------------------------------------- | -------------------------- | ------------------------------ |
 | [Vault](https://registry.terraform.io/providers/hashicorp/vault/latest/docs)      | hashicorp/vault >= 5.0.0   | Secret storage                 |
 | [Keycloak](https://registry.terraform.io/providers/keycloak/keycloak/latest/docs) | keycloak/keycloak >= 5.0.0 | Identity and access management |
+| [Harbor](https://registry.terraform.io/providers/goharbor/harbor/latest/docs)     | goharbor/harbor >= 3.0.0   | Container image registry       |
 
 ## Prerequisites
 
 - **Terraform** >= 1.13.0 (currently the latest security-supported version)
-- A running K3s cluster with Vault and Keycloak already deployed.
+- A running K3s cluster with Vault, Keycloak, and Harbor already deployed.
 
 ## Directory Structure
 
 ```
 terraform/
 ├── vault/      # Vault secret engines, policies, and Kubernetes auth configuration
-└── keycloak/   # Keycloak realms, clients, users, groups, and roles
+├── keycloak/   # Keycloak realms, clients, users, groups, and roles
+└── harbor/     # Harbor OIDC authentication via Keycloak
 ```
 
 ## Configuration
@@ -32,10 +34,11 @@ variables and configuration details.
 | ------------ | ---------------------------------------- | ----------------------------------------- |
 | vault/       | [vault/README.md](vault/README.md)       | Secret engines, policies, Kubernetes auth |
 | keycloak/    | [keycloak/README.md](keycloak/README.md) | Realms, clients, users, groups, roles     |
+| harbor/      | [harbor/README.md](harbor/README.md)     | OIDC authentication via Keycloak          |
 
 ## Usage
 
-Run the following commands in each subdirectory (`vault/` or `keycloak/`):
+Run the following commands in each subdirectory (`vault/`, `keycloak/`, or `harbor/`):
 
 ```bash
 # 1. Initialize the working directory and download providers
