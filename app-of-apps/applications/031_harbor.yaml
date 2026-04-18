@@ -25,7 +25,7 @@ spec:
   sources:
     - chart: harbor
       repoURL: https://helm.goharbor.io
-      targetRevision: 1.17.4
+      targetRevision: 1.17.5
       helm:
         valueFiles:
           - $valueFiles/app-of-apps/applications/helm-values/harbor.values.yaml
