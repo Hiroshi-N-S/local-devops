@@ -1,0 +1,37 @@
+---
+# ClusterIssuer for self-signed certificates
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: selfsigned-issuer
+spec:
+  selfSigned: {}
+
+---
+# Certificate resource based on generate-self-signed-cert.sh defaults
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: local-devenv-cert
+spec:
+  secretName: local-devenv-tls
+  # Duration based on CERT_EXPIRATION_DAYS (3650 days = 87600 hours)
+  duration: 87600h
+  # Renew before expiry (30 days)
+  renewBefore: 720h
+  secretTemplate:
+    annotations:
+      reflector.v1.k8s.emberstack.com/reflection-allowed: "true"
+      reflector.v1.k8s.emberstack.com/reflection-allowed-namespaces: "kube-system,devops-system"
+      reflector.v1.k8s.emberstack.com/reflection-auto-enabled: "true"
+  subject:
+    organizations:
+      - personal
+  commonName: devenv.local
+  dnsNames:
+    - devenv.local
+    - "*.devenv.local"
+  # Issuer reference
+  issuerRef:
+    name: selfsigned-issuer
+    kind: ClusterIssuer

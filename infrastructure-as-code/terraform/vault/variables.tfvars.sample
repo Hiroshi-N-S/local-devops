@@ -172,10 +172,6 @@ kubernetes_auth = {
           "HTTPS_PROXY"                 = "<SAMPLE>"
           "NO_PROXY"                    = "<SAMPLE>"
         }
-        local-devenv-tls = {
-          "tls.crt"                     = "file:../../../../certs/local-devenv.crt"
-          "tls.key"                     = "file:../../../../certs/local-devenv.key"
-        }
         coredns-custom = {
           "custom.server"               = <<-EOT
             devenv.local:53 {
