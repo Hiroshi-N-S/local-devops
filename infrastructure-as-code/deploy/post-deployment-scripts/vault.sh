@@ -226,12 +226,29 @@ fi
       exit 1
     fi
 
-    if terraform plan -var-file=variables.tfvars -detailed-exitcode >/dev/null 2>&1; then
-      printf "\e[32m[INFO] %s\e[m\n" "No changes to apply for Terraform configuration in $VAULT_TERRAFORM_DIR."
-    else
-      printf "\e[32m[INFO] %s\e[m\n" "Applying Terraform configuration in $VAULT_TERRAFORM_DIR."
-      terraform apply -input=false -auto-approve -var-file=variables.tfvars
-      printf "\e[32m[INFO] %s\e[m\n" "Terraform configuration in $VAULT_TERRAFORM_DIR applied successfully."      
-    fi
+    case $(terraform plan -var-file=variables.tfvars -detailed-exitcode >/dev/null 2>&1; echo $?) in
+      0)
+        printf "\e[32m[INFO] %s\e[m\n" "No changes to apply for Terraform configuration in $VAULT_TERRAFORM_DIR."
+        ;;
+      2)
+        printf "\e[32m[INFO] %s\e[m\n" "Changes detected for Terraform configuration in $VAULT_TERRAFORM_DIR. Applying changes."
+
+        printf "\e[32m[INFO] %s\e[m\n" "Importing existing Vault configurations into Terraform state."
+        terraform import -var-file=variables.tfvars 'vault_mount.kv2_secrets_engines["k8s-secrets"]' k8s-secrets || true
+        terraform import -var-file=variables.tfvars vault_auth_backend.kubernetes_auth kubernetes || true
+        printf "\e[32m[INFO] %s\e[m\n" "Existing Vault configurations imported successfully."
+
+        printf "\e[32m[INFO] %s\e[m\n" "Applying Terraform configuration in $VAULT_TERRAFORM_DIR."
+        if ! terraform apply -input=false -auto-approve -var-file=variables.tfvars 2>&1; then
+          printf "\e[31m[ERROR] %s\e[m\n" "Failed to apply Terraform configuration in $VAULT_TERRAFORM_DIR."
+          exit 1
+        fi
+        printf "\e[32m[INFO] %s\e[m\n" "Terraform configuration in $VAULT_TERRAFORM_DIR applied successfully."
+        ;;
+      *)
+        printf "\e[31m[ERROR] %s\e[m\n" "Failed to plan Terraform configuration in $VAULT_TERRAFORM_DIR."
+        exit 1
+        ;;
+    esac
   )
 )
