@@ -48,3 +48,32 @@ terraform plan -var-file=variables.tfvars
 # 3. Apply the changes
 terraform apply -var-file=variables.tfvars
 ```
+
+## Usage in Docker Client
+
+### Provide the certificate to Rancher Desktop on macOS
+
+``` bash
+# 1. Create directory for Docker certificates
+mkdir -p ~/.docker/certs.d/registry.devenv.local:8443
+
+# 2. Copy the TLS certificate to Docker certificates directory
+cp PATH/TO/local-devenv-tls.crt ~/.docker/certs.d/registry.devenv.local:8443
+
+# 3. Access Rancher Desktop's LIMA VM shell
+LIMA_HOME="$HOME/Library/Application Support/rancher-desktop/lima" "/Applications/Rancher Desktop.app/Contents/Resources/resources/darwin/lima/bin/limactl" shell 0
+
+# 4. Copy the certificate to system certificate store inside LIMA VM
+sudo cp /etc/docker/certs.d/registry.devenv.local:8443/local-devenv-tls.crt /usr/local/share/ca-certificates/
+
+# 5. Update hosts file to resolve registry IP (as necessary)
+cat <<EOT | sudo tee -a /etc/hosts
+REGISTRY_IP  registry.devenv.local
+EOT
+
+# 6. Restart Docker Engine to enable certificates
+sudo service docker restart
+
+# 7. Logout from LIMA VM
+exit
+```
