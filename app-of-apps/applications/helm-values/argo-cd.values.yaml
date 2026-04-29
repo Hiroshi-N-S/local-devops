@@ -36,7 +36,7 @@ configs:
   cm:
     # -- OIDC configuration.
     ## Ref: https://argo-cd.readthedocs.io/en/stable/operator-manual/user-management/keycloak/
-    oidc.tls.insecure.skip.verify: true
+    oidc.tls.insecure.skip.verify: false
     oidc.config: |
       name: Keycloak
       issuer: $argocd-oidc:issuer_url
