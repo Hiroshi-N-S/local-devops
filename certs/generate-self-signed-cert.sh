@@ -13,9 +13,19 @@ LOCALITY_NAME=${LOCALITY_NAME:-'Osaka'}
 ORGANIZATION_NAME=${ORGANIZATION_NAME:-'Personal'}
 
 if [ -e $SCRIPT_DIR/$CERT_FILE_NAME.crt ]; then
-  printf "\e[32m[INFO] %s\e[m\n" "Certificate already exists: $SCRIPT_DIR/$CERT_FILE_NAME.crt"
-  printf "\e[32m[INFO] %s\e[m\n" "Skipping certificate generation."
-  exit 0
+  # Check if expiring within 30 days / 2,592,000 seconds.
+  if openssl x509 -in $SCRIPT_DIR/$CERT_FILE_NAME.crt -checkend 2592000 > /dev/null; then
+     printf "\e[32m[INFO] %s\e[m\n" "Certificate is valid and not expired: $SCRIPT_DIR/$CERT_FILE_NAME.crt"
+     printf "\e[32m[INFO] %s\e[m\n" "Skipping certificate generation."
+     exit 0
+  fi
+
+  printf "\e[31m[WARN] %s\e[m\n" "Certificate is expired: $SCRIPT_DIR/$CERT_FILE_NAME.crt"
+  printf "\e[31m[WARN] %s\e[m\n" "Regenerating the certificate."
+
+  printf "\e[32m[INFO] %s\e[m\n" "Cleaning up old certificates in $SCRIPT_DIR."
+  rm -rf $SCRIPT_DIR/$CERT_FILE_NAME{.crt,.key,-ca.crt,-ca.key}
+  printf "\e[32m[INFO] %s\e[m\n" "Cleaning up old certificates in $SCRIPT_DIR: DONE"
 fi
 
 printf "\e[32m[INFO] %s\e[m\n" "Cleaning up old certificates in $SCRIPT_DIR."

@@ -7,6 +7,9 @@ APP_PREFIX=${APP_PREFIX:-'devops'}
 SCRIPT_DIR=$(dirname "$0")
 REPO_ROOT_DIR=$(cd $SCRIPT_DIR/../.. && pwd)
 
+CERT_DIR=$REPO_ROOT_DIR/certs
+CERT_FILE_NAME=${CERT_FILE_NAME:-'local-devenv'}
+
 POST_DEPLOYMENT_SCRIPTS_DIR=$SCRIPT_DIR/post-deployment-scripts
 
 APP_OF_APPS_DIR=${APP_OF_APPS_DIR:-"$REPO_ROOT_DIR/app-of-apps"}
@@ -59,6 +62,29 @@ if [ $DEPLOY_MODE != "DELETE" ]; then
     fi
   done
 fi
+
+#
+# Generate certificates for the local development environment.
+#
+
+if [ $DEPLOY_MODE == "INSTALL" ]; then
+  printf "\e[32m[INFO] %s\e[m\n" "Generating certificates for the local development environment."
+  bash $CERT_DIR/generate-self-signed-cert.sh
+  printf "\e[32m[INFO] %s\e[m\n" "Generating certificates for the local development environment: DONE"
+
+  printf "\e[32m[INFO] %s\e[m\n" "Installing the certificate to the system trust store."
+  sudo cp -f $CERT_DIR/${CERT_FILE_NAME}.crt /usr/local/share/ca-certificates/${CERT_FILE_NAME}.crt
+  sudo update-ca-certificates
+  printf "\e[32m[INFO] %s\e[m\n" "Installing the certificate to the system trust store: DONE"
+
+  printf "\e[32m[INFO] %s\e[m\n" "Restarting k3s to apply the new certificate."
+  sudo systemctl restart k3s
+  printf "\e[32m[INFO] %s\e[m\n" "Restarting k3s to apply the new certificate: DONE"
+fi
+
+#
+# Setting up host entries.
+#
 
 NFS_HOST=${NFS_HOST:-"nfs.${NODE_HOST}"}
 NFS_IP=${NFS_IP:-"${NODE_IP:-''}"}
