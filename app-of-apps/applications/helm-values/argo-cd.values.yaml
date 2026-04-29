@@ -55,7 +55,7 @@ configs:
 
     # -- Enable local admin user
     ## Ref: https://argo-cd.readthedocs.io/en/latest/faq/#how-to-disable-admin-user
-    admin.enabled: true
+    admin.enabled: false
     users.anonymous.enabled: false
     url: https://argocd.devenv.local:8443
 
