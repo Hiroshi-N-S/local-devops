@@ -20,6 +20,19 @@ kubernetes_auth = {
       path                              = "data/*"
       capabilities                      = [ "read", "list" ]
       data = {
+        argoworkflows-registry-credential = {
+          ".dockerconfigjson"          = <<-EOT
+            {
+              "auths": {
+                "registry.devenv.local:8443": {
+                  "username": "<SAMPLE>",
+                  "password": "<SAMPLE>",
+                  "auth": "<SAMPLE>"
+                }
+              }
+            }
+            EOT
+        }
         argoworkflows-artifact-repositories = {
           "default-s3-artifact-repository" = <<-EOT
             archiveLogs: true
