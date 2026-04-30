@@ -1,0 +1,100 @@
+---
+## Configuration for alertmanager
+## ref: https://prometheus.io/docs/alerting/alertmanager/
+##
+alertmanager:
+
+  ## Deploy alertmanager
+  ##
+  enabled: false
+
+## Using default values from https://github.com/grafana-community/helm-charts/blob/main/charts/grafana/values.yaml
+##
+grafana:
+  enabled: true
+
+  ## Timezone for the default dashboards
+  ## Other options are: browser or a specific timezone, i.e. Europe/Luxembourg
+  ##
+  defaultDashboardsTimezone: Asia/Tokyo
+
+  # Use an existing secret for the admin user.
+  admin:
+    ## Name of the secret. Can be templated.
+    existingSecret: prometheus-grafana-admin
+    userKey: username
+    passwordKey: password
+
+  ingress:
+    ## If true, Grafana Ingress will be created
+    ##
+    enabled: true
+
+    ## IngressClassName for Grafana Ingress.
+    ## Should be provided if Ingress is enable.
+    ##
+    ingressClassName: traefik
+
+    ## Annotations for Grafana Ingress
+    ##
+    annotations:
+      kubernetes.io/ingress.class: traefik
+      traefik.ingress.kubernetes.io/router.entrypoints: websecure
+
+    ## Hostnames.
+    ## Must be provided if Ingress is enable.
+    ##
+    # hosts:
+    #   - grafana.domain.com
+    hosts:
+      - grafana.prometheus.devenv.local
+
+    ## Path for grafana ingress
+    path: /
+
+## Component scraping kube state metrics
+##
+kubeStateMetrics:
+  enabled: true
+  extraArgs:
+    - --collectors=pods,services,nodes
+
+## Deploy node exporter as a daemonset to all nodes
+##
+nodeExporter:
+  enabled: true
+  operatingSystems:
+    linux:
+      enabled: true
+    aix:
+      enabled: false
+    darwin:
+      enabled: false
+
+## Deploy a Prometheus instance
+##
+prometheus:
+  enabled: true
+
+  prometheusSpec:
+    resources:
+      requests:
+        cpu: 200m
+        memory: 256Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+    storage:
+      tsdb:
+        retention:
+          time: 6h
+          size: 1Gi
+
+## Configuration for thanosRuler
+## ref: https://thanos.io/tip/components/rule.md/
+##
+thanosRuler:
+
+  ## Deploy thanosRuler
+  ##
+  enabled: false

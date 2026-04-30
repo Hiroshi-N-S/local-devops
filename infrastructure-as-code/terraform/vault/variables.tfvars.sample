@@ -52,6 +52,10 @@ kubernetes_auth = {
           "client_id"                   = "<SAMPLE>"
           "client_secret"               = "<SAMPLE>"
         }
+        prometheus-grafana-admin = {
+          "username"                   = "<SAMPLE>"
+          "password"                   = "<SAMPLE>"
+        }
         harbor-admin = {
           "HARBOR_ADMIN_PASSWORD"       = "<SAMPLE>"
         }
