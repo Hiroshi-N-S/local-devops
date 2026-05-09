@@ -1,7 +1,7 @@
 #!/bin/sh
 set -euo pipefail
 
-K3S_VERSION=${K3S_VERSION:-"v1.34.6+k3s1"}
+K3S_VERSION=${K3S_VERSION:-"v1.35.4+k3s1"}
 
 SCRIPT_DIR=$(dirname "$0")
 K3S_CONFIGS_DIR="$SCRIPT_DIR/k3s-configs"
