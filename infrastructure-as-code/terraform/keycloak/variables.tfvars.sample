@@ -110,6 +110,34 @@ realms = {
           }
         }
       }
+            "prometheus-grafana" = {
+        name                            = "prometheus-grafana"
+        description                     = "Prometheus & Grafana Client"
+
+        standard_flow_enabled           = true
+        direct_access_grants_enabled    = true
+
+        root_url                        = "https://grafana.prometheus.devenv.local:8443"
+        base_url                        = "/"
+        valid_redirect_uris             = [ "https://grafana.prometheus.devenv.local:8443/login/generic_oauth" ]
+        valid_post_logout_redirect_uris = [ "https://grafana.prometheus.devenv.local:8443" ]
+        web_origins                     = [ "https://grafana.prometheus.devenv.local:8443" ]
+        admin_url                       = "https://grafana.prometheus.devenv.local:8443"
+
+        default_scopes                  = [ "profile", "email", "roles" ]
+
+        roles  = {
+          prometheus-grafana-admin = {
+            description                 = "Admin role for Prometheus / Grafana"
+          }
+          prometheus-grafana-editor = {
+            description                 = "Editor role for Prometheus / Grafana"
+          }
+          prometheus-grafana-viewer = {
+            description                 = "Viewer role for Prometheus / Grafana"
+          }
+        }
+      }
       "minio" = {
         name                            = "minio"
         description                     = "MinIO Client"

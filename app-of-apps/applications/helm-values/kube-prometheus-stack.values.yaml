@@ -1,0 +1,178 @@
+---
+## Component scraping kube state metrics
+##
+kubeStateMetrics:
+  enabled: true
+  extraArgs:
+    - --collectors=pods,services,nodes
+
+## Deploy node exporter as a daemonset to all nodes
+##
+nodeExporter:
+  enabled: false
+
+## Deploy a Prometheus instance
+##
+prometheus:
+  enabled: true
+
+  prometheusSpec:
+    resources:
+      requests:
+        cpu: 200m
+        memory: 256Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+    storage:
+      tsdb:
+        retention:
+          time: 6h
+          size: 1Gi
+
+## Using default values from https://github.com/grafana-community/helm-charts/blob/main/charts/grafana/values.yaml
+##
+grafana:
+  enabled: true
+
+  replicas: 1
+
+  ## Create HorizontalPodAutoscaler object for deployment type
+  #
+  autoscaling:
+    enabled: false
+
+  testFramework:
+    enabled: false
+
+  ## Timezone for the default dashboards
+  ## Other options are: browser or a specific timezone, i.e. Europe/Luxembourg
+  ##
+  defaultDashboardsTimezone: Asia/Tokyo
+
+  ingress:
+    ## If true, Grafana Ingress will be created
+    ##
+    enabled: true
+
+    ## IngressClassName for Grafana Ingress.
+    ## Should be provided if Ingress is enable.
+    ##
+    ingressClassName: traefik
+
+    ## Annotations for Grafana Ingress
+    ##
+    annotations:
+      kubernetes.io/ingress.class: traefik
+      traefik.ingress.kubernetes.io/router.entrypoints: websecure
+
+    ## Hostnames.
+    ## Must be provided if Ingress is enable.
+    ##
+    # hosts:
+    #   - grafana.domain.com
+    hosts:
+      - grafana.prometheus.devenv.local
+
+    ## Path for grafana ingress
+    path: /
+
+  # Use an existing secret for the admin user.
+  admin:
+    ## Name of the secret. Can be templated.
+    existingSecret: prometheus-grafana-admin
+    userKey: username
+    passwordKey: password
+
+  ## Grafana's primary configuration
+  ## NOTE: values in map will be converted to ini format
+  ## ref: http://docs.grafana.org/installation/configuration/
+  ##
+  grafana.ini:
+    log:
+      mode: console
+    server:
+      root_url: https://grafana.prometheus.devenv.local:8443/
+    auth.generic_oauth:
+      enabled: true
+      allow_sign_up: true
+      allow_assign_grafana_admin: true
+      role_attribute_strict: true
+      use_refresh_token: true
+
+  ## The names of secrets in the same kubernetes namespace which contain values to be added to the environment
+  ## Each entry should contain a name key, and can optionally specify whether the secret must be defined with an optional key.
+  ## Name is templated.
+  envFromSecrets:
+    - name: prometheus-grafana-oauth
+
+  ## Additional grafana server secret mounts
+  # Defines additional mounts with secrets. Secrets must be manually created in the namespace.
+  extraSecretMounts:
+    - name: local-devenv-tls-vol
+      mountPath: /etc/ssl/certs/traefik-tls.crt
+      secretName: local-devenv-tls
+      readOnly: true
+      optional: false
+      subPath: tls.crt
+
+  ## Enable persistence using Persistent Volume Claims
+  ## ref: https://kubernetes.io/docs/concepts/storage/persistent-volumes/
+  ##
+  persistence:
+    type: pvc
+    enabled: false
+
+  resources:
+    limits:
+      cpu: 500m
+      memory: 1Gi
+    requests:
+      cpu: 200m
+      memory: 512Mi
+
+  sidecar:
+    dashboards:
+      enabled: true
+    datasources:
+      enabled: true
+      alertmanager:
+        enabled: false
+
+  serviceMonitor:
+    # If true, a ServiceMonitor CRD is created for a prometheus operator
+    # https://github.com/prometheus-operator/prometheus-operator
+    #
+    enabled: false
+
+windowsMonitoring:
+  ## Deploys the windows-exporter and Windows-specific dashboards and rules (job name must be 'windows-exporter')
+  enabled: false
+
+## Configuration for prometheus-windows-exporter
+## ref: https://github.com/prometheus-community/helm-charts/tree/main/charts/prometheus-windows-exporter
+##
+prometheus-windows-exporter:
+  ## Enable ServiceMonitor and set Kubernetes label to use as a job label
+  ##
+  prometheus:
+    monitor:
+      enabled: false
+
+## Configuration for alertmanager
+## ref: https://prometheus.io/docs/alerting/alertmanager/
+##
+alertmanager:
+
+  ## Deploy alertmanager
+  ##
+  enabled: false
+
+## Configuration for thanosRuler
+## ref: https://thanos.io/tip/components/rule.md/
+##
+thanosRuler:
+
+  ## Deploy thanosRuler
+  ##
+  enabled: false
