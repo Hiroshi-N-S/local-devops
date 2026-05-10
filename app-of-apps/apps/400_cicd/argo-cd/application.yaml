@@ -11,7 +11,7 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "410"
   finalizers:
-    - argocd.argoproj.io/resources-finalizer/background
+    - argocd.argoproj.io/resources-finalizer
 spec:
   project: devops-project
   destination:
