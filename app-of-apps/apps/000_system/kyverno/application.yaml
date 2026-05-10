@@ -11,7 +11,7 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "10"
   finalizers:
-    - resources-finalizer.argocd.argoproj.io/background
+    - argocd.argoproj.io/resources-finalizer/background
 spec:
   project: devops-project
   destination:
@@ -44,7 +44,7 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "11"
   finalizers:
-    - resources-finalizer.argocd.argoproj.io/background
+    - argocd.argoproj.io/resources-finalizer/background
 spec:
   project: devops-project
   destination:

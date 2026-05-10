@@ -8,7 +8,7 @@ metadata:
   name: app-of-devops-apps
   namespace: devops-system
   finalizers:
-    - resources-finalizer.argocd.argoproj.io
+    - argocd.argoproj.io/resources-finalizer
 spec:
   project: devops-project
   destination:
