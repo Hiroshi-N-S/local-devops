@@ -6,15 +6,17 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: devops-kube-prometheus-stack
+  name: devops-csi-driver-nfs
   namespace: devops-system
+  annotations:
+    argocd.argoproj.io/sync-wave: "20"
   finalizers:
     - resources-finalizer.argocd.argoproj.io/background
 spec:
   project: devops-project
   destination:
     name: in-cluster
-    namespace: devops-system
+    namespace: kube-system
   syncPolicy:
     automated:
       prune: true
@@ -23,12 +25,12 @@ spec:
       - CreateNamespace=true
       - ServerSideApply=true
   sources:
-    - chart: kube-prometheus-stack
-      repoURL: https://prometheus-community.github.io/helm-charts
-      targetRevision: 84.2.1
+    - chart: csi-driver-nfs
+      repoURL: https://raw.githubusercontent.com/kubernetes-csi/csi-driver-nfs/master/charts
+      targetRevision: 4.13.1
       helm:
         valueFiles:
-          - $valueFiles/app-of-apps/applications/helm-values/kube-prometheus-stack.values.yaml
+          - $valueFiles/app-of-apps/apps/000_system/csi-driver-nfs/values.yaml
     - ref: valueFiles
       repoURL: https://github.com/Hiroshi-N-S/local-devops.git
-      targetRevision: develop/0.0.1
+      targetRevision: refactor/app-of-apps/domain-based

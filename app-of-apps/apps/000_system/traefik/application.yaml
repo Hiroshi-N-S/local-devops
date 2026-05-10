@@ -6,15 +6,17 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: devops-harbor
+  name: devops-traefik-config
   namespace: devops-system
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
   finalizers:
     - resources-finalizer.argocd.argoproj.io/background
 spec:
   project: devops-project
   destination:
     name: in-cluster
-    namespace: devops-system
+    namespace: kube-system
   syncPolicy:
     automated:
       prune: true
@@ -23,12 +25,6 @@ spec:
       - CreateNamespace=true
       - ServerSideApply=true
   sources:
-    - chart: harbor
-      repoURL: https://helm.goharbor.io
-      targetRevision: 1.17.5
-      helm:
-        valueFiles:
-          - $valueFiles/app-of-apps/applications/helm-values/harbor.values.yaml
-    - ref: valueFiles
+    - path: app-of-apps/apps/000_system/traefik/manifests
       repoURL: https://github.com/Hiroshi-N-S/local-devops.git
-      targetRevision: develop/0.0.1
+      targetRevision: refactor/app-of-apps/domain-based

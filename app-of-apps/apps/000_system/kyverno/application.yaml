@@ -8,6 +8,8 @@ kind: Application
 metadata:
   name: devops-kyverno
   namespace: devops-system
+  annotations:
+    argocd.argoproj.io/sync-wave: "10"
   finalizers:
     - resources-finalizer.argocd.argoproj.io/background
 spec:
@@ -28,7 +30,34 @@ spec:
       targetRevision: 3.7.1
       helm:
         valueFiles:
-          - $valueFiles/app-of-apps/applications/helm-values/kyverno.values.yaml
+          - $valueFiles/app-of-apps/apps/000_system/kyverno/values.yaml
     - ref: valueFiles
       repoURL: https://github.com/Hiroshi-N-S/local-devops.git
-      targetRevision: develop/0.0.1
+      targetRevision: refactor/app-of-apps/domain-based
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: devops-kyverno-policies
+  namespace: devops-system
+  annotations:
+    argocd.argoproj.io/sync-wave: "11"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io/background
+spec:
+  project: devops-project
+  destination:
+    name: in-cluster
+    namespace: kyverno-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: false
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+  sources:
+    - path: app-of-apps/apps/000_system/kyverno/manifests
+      repoURL: https://github.com/Hiroshi-N-S/local-devops.git
+      targetRevision: refactor/app-of-apps/domain-based

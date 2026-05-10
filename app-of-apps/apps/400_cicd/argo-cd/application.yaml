@@ -6,8 +6,10 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: devops-external-secrets
+  name: devops-argo-cd
   namespace: devops-system
+  annotations:
+    argocd.argoproj.io/sync-wave: "410"
   finalizers:
     - resources-finalizer.argocd.argoproj.io/background
 spec:
@@ -23,12 +25,12 @@ spec:
       - CreateNamespace=true
       - ServerSideApply=true
   sources:
-    - chart: external-secrets
-      repoURL: https://charts.external-secrets.io/
-      targetRevision: 2.2.0
+    - chart: argo-cd
+      repoURL: https://argoproj.github.io/argo-helm
+      targetRevision: 9.3.7
       helm:
         valueFiles:
-          - $valueFiles/app-of-apps/applications/helm-values/external-secrets.values.yaml
+          - $valueFiles/app-of-apps/apps/400_cicd/argo-cd/values.yaml
     - ref: valueFiles
       repoURL: https://github.com/Hiroshi-N-S/local-devops.git
-      targetRevision: develop/0.0.1
+      targetRevision: refactor/app-of-apps/domain-based

@@ -6,15 +6,17 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: devops-traefik-config
+  name: devops-argo-workflows
   namespace: devops-system
+  annotations:
+    argocd.argoproj.io/sync-wave: "420"
   finalizers:
     - resources-finalizer.argocd.argoproj.io/background
 spec:
   project: devops-project
   destination:
     name: in-cluster
-    namespace: kube-system
+    namespace: devops-system
   syncPolicy:
     automated:
       prune: true
@@ -23,6 +25,12 @@ spec:
       - CreateNamespace=true
       - ServerSideApply=true
   sources:
-    - path: app-of-apps/applications/k8s-manifests/traefik-config
+    - chart: argo-workflows
+      repoURL: https://argoproj.github.io/argo-helm
+      targetRevision: 1.0.6
+      helm:
+        valueFiles:
+          - $valueFiles/app-of-apps/apps/400_cicd/argo-workflows/values.yaml
+    - ref: valueFiles
       repoURL: https://github.com/Hiroshi-N-S/local-devops.git
-      targetRevision: develop/0.0.1
+      targetRevision: refactor/app-of-apps/domain-based

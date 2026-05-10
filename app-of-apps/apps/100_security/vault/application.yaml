@@ -6,15 +6,17 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: devops-csi-driver-nfs
+  name: devops-vault
   namespace: devops-system
+  annotations:
+    argocd.argoproj.io/sync-wave: "100"
   finalizers:
     - resources-finalizer.argocd.argoproj.io/background
 spec:
   project: devops-project
   destination:
     name: in-cluster
-    namespace: kube-system
+    namespace: devops-system
   syncPolicy:
     automated:
       prune: true
@@ -23,12 +25,12 @@ spec:
       - CreateNamespace=true
       - ServerSideApply=true
   sources:
-    - chart: csi-driver-nfs
-      repoURL: https://raw.githubusercontent.com/kubernetes-csi/csi-driver-nfs/master/charts
-      targetRevision: 4.13.1
+    - chart: vault
+      repoURL: https://helm.releases.hashicorp.com
+      targetRevision: 0.31.0
       helm:
         valueFiles:
-          - $valueFiles/app-of-apps/applications/helm-values/csi-driver-nfs.values.yaml
+          - $valueFiles/app-of-apps/apps/100_security/vault/values.yaml
     - ref: valueFiles
       repoURL: https://github.com/Hiroshi-N-S/local-devops.git
-      targetRevision: develop/0.0.1
+      targetRevision: refactor/app-of-apps/domain-based

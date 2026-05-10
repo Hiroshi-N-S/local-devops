@@ -24,4 +24,4 @@ spec:
   sources:
     - path: app-of-apps/applications
       repoURL: 'https://github.com/Hiroshi-N-S/local-devops.git'
-      targetRevision: develop/0.0.1
+      targetRevision: refactor/app-of-apps/domain-based

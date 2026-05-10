@@ -6,8 +6,10 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: devops-vault
+  name: devops-keycloak
   namespace: devops-system
+  annotations:
+    argocd.argoproj.io/sync-wave: "120"
   finalizers:
     - resources-finalizer.argocd.argoproj.io/background
 spec:
@@ -23,12 +25,6 @@ spec:
       - CreateNamespace=true
       - ServerSideApply=true
   sources:
-    - chart: vault
-      repoURL: https://helm.releases.hashicorp.com
-      targetRevision: 0.31.0
-      helm:
-        valueFiles:
-          - $valueFiles/app-of-apps/applications/helm-values/vault.values.yaml
-    - ref: valueFiles
+    - path: app-of-apps/apps/100_security/keycloak/manifests
       repoURL: https://github.com/Hiroshi-N-S/local-devops.git
-      targetRevision: develop/0.0.1
+      targetRevision: refactor/app-of-apps/domain-based

@@ -6,8 +6,10 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: devops-argo-cd
+  name: devops-minio
   namespace: devops-system
+  annotations:
+    argocd.argoproj.io/sync-wave: "300"
   finalizers:
     - resources-finalizer.argocd.argoproj.io/background
 spec:
@@ -23,12 +25,6 @@ spec:
       - CreateNamespace=true
       - ServerSideApply=true
   sources:
-    - chart: argo-cd
-      repoURL: https://argoproj.github.io/argo-helm
-      targetRevision: 9.3.7
-      helm:
-        valueFiles:
-          - $valueFiles/app-of-apps/applications/helm-values/argo-cd.values.yaml
-    - ref: valueFiles
+    - path: app-of-apps/apps/300_storage/minio/manifests
       repoURL: https://github.com/Hiroshi-N-S/local-devops.git
-      targetRevision: develop/0.0.1
+      targetRevision: refactor/app-of-apps/domain-based
