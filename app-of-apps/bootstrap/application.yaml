@@ -27,3 +27,4 @@ spec:
       targetRevision: refactor/app-of-apps/domain-based
       directory:
         recurse: true
+        include: '*/application.yaml'
