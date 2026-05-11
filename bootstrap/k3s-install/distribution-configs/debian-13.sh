@@ -6,28 +6,28 @@ VELERO_VER=${VELERO_VER:-'1.16.2'}
 # Creating missing /dev/kmsg to avoid k3s installation errors.
 
 if [ ! -e /dev/kmsg ]; then
-  printf "\e[32m[INFO] %s\e[m\n" " -> Creating /dev/kmsg as a symlink to /dev/console to avoid k3s installation errors."
+  info "Creating /dev/kmsg as a symlink to /dev/console to avoid k3s installation errors."
 
   sudo ln -s /dev/console /dev/kmsg
   echo 'L /dev/kmsg - - - - /dev/console' | sudo tee /etc/tmpfiles.d/kmsg.conf
 
-  printf "\e[32m[INFO] %s\e[m\n" " -> /dev/kmsg created successfully."
+  info " -> /dev/kmsg created successfully."
 fi
 
 # Installing dependencies for K3s.
 
-printf "\e[32m[INFO] %s\e[m\n" " -> Installing dependencies for K3s."
+info "Installing dependencies for K3s."
 
 sudo apt update && sudo apt upgrade -y && sudo apt install -y --no-install-recommends \
   curl \
   ca-certificates
 
-printf "\e[32m[INFO] %s\e[m\n" " -> Dependencies for K3s installed successfully."
+info "Dependencies for K3s installed successfully."
 
 # Installing helm.
 
 if ! command -v helm >/dev/null 2>&1; then
-  printf "\e[32m[INFO] %s\e[m\n" " -> Helm is NOT installed. Installing Helm."
+  info "Helm is NOT installed. Installing Helm."
 
   sudo apt-get install curl gpg apt-transport-https --yes
   curl -fsSL https://packages.buildkite.com/helm-linux/helm-debian/gpgkey | gpg --dearmor | sudo tee /usr/share/keyrings/helm.gpg > /dev/null
@@ -35,18 +35,18 @@ if ! command -v helm >/dev/null 2>&1; then
   sudo apt update
   sudo apt install -y --no-install-recommends helm
 
-  printf "\e[32m[INFO] %s\e[m\n" " -> Helm installation completed."
+  info " -> Helm installation completed."
 fi
 
 # Installing velero
 
 if ! command -v velero >/dev/null 2>&1; then
-  printf "\e[32m[INFO] %s\e[m\n" " -> Velero is NOT installed. Installing Velero."
+  info "Velero is NOT installed. Installing Velero."
 
   VELERO_PKG_NAME="velero-v${VELERO_VER}-linux-$(dpkg --print-architecture)"
   curl -fsSL https://github.com/vmware-tanzu/velero/releases/download/v${VELERO_VER}/${VELERO_PKG_NAME}.tar.gz |\
     sudo tar -zxv -C /usr/local/bin --strip-components 1 ${VELERO_PKG_NAME}/velero
   sudo chmod +x /usr/local/bin/velero
 
-  printf "\e[32m[INFO] %s\e[m\n" " -> Velero installation completed."
+  info " -> Velero installation completed."
 fi
