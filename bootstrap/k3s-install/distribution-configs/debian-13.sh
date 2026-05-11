@@ -1,8 +1,6 @@
 #!/bin/sh
 set -euo pipefail
 
-VELERO_VER=${VELERO_VER:-'1.16.2'}
-
 # Creating missing /dev/kmsg to avoid k3s installation errors.
 
 if [ ! -e /dev/kmsg ]; then
@@ -36,17 +34,4 @@ if ! command -v helm >/dev/null 2>&1; then
   sudo apt install -y --no-install-recommends helm
 
   info " -> Helm installation completed."
-fi
-
-# Installing velero
-
-if ! command -v velero >/dev/null 2>&1; then
-  info "Velero is NOT installed. Installing Velero."
-
-  VELERO_PKG_NAME="velero-v${VELERO_VER}-linux-$(dpkg --print-architecture)"
-  curl -fsSL https://github.com/vmware-tanzu/velero/releases/download/v${VELERO_VER}/${VELERO_PKG_NAME}.tar.gz |\
-    sudo tar -zxv -C /usr/local/bin --strip-components 1 ${VELERO_PKG_NAME}/velero
-  sudo chmod +x /usr/local/bin/velero
-
-  info " -> Velero installation completed."
 fi
