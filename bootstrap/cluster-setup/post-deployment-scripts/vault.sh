@@ -1,14 +1,13 @@
 #!/bin/bash
 set -euo pipefail
 
-SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
-REPO_ROOT_DIR="$SCRIPT_DIR/../../.."
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+REPO_ROOT_DIR="$(cd "$SCRIPT_DIR/../../.." && pwd)"
 UTILITY_SCRIPTS_DIR="$REPO_ROOT_DIR/utility-scripts"
-TERRAFORM_DIR=$REPO_ROOT_DIR/infrastructure-as-code/terraform
 
-VAULT_TERRAFORM_DIR=$TERRAFORM_DIR/vault
-VAULT_INITIAL_CONFIG_FILE=$HOME/.vault-initial.config
-VAULT_K8S_CONFIG_FILE=$HOME/.k8s-configs.yaml
+VAULT_TERRAFORM_DIR="$REPO_ROOT_DIR/iac/vault"
+VAULT_INITIAL_CONFIG_FILE="$HOME/.vault-initial.config"
+VAULT_K8S_CONFIG_FILE="$HOME/.k8s-configs.yaml"
 
 VAULT_NAMESPACE=${DESTINATION_NAMESPACE:-'devops-system'}
 VAULT_POD_NAME=${VAULT_POD_NAME:-'devops-vault-0'}
