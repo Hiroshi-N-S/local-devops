@@ -1,0 +1,30 @@
+---
+# docs:
+#   - https://argo-cd.readthedocs.io/en/stable/operator-manual/declarative-setup/
+#   - https://github.com/argoproj/argo-cd/blob/master/docs/operator-manual/application.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: app-of-devops-apps
+  namespace: devops-system
+  finalizers:
+    - argocd.argoproj.io/resources-finalizer
+spec:
+  project: devops-project
+  destination:
+    name: in-cluster
+    namespace: devops-system
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: false
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+  sources:
+    - path: app-of-apps/apps
+      repoURL: 'https://github.com/Hiroshi-N-S/local-devops.git'
+      targetRevision: develop/0.1.0
+      directory:
+        recurse: true
+        include: '*/application.yaml'
