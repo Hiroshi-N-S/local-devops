@@ -33,4 +33,4 @@ spec:
           - $valueFiles/app-of-apps/apps/400_cicd/argo-workflows/values.yaml
     - ref: valueFiles
       repoURL: https://github.com/Hiroshi-N-S/local-devops.git
-      targetRevision: develop/0.1.0
+      targetRevision: develop

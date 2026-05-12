@@ -27,4 +27,4 @@ spec:
   sources:
     - path: app-of-apps/apps/300_storage/minio/manifests
       repoURL: https://github.com/Hiroshi-N-S/local-devops.git
-      targetRevision: develop/0.1.0
+      targetRevision: develop
