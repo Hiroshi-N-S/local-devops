@@ -33,4 +33,4 @@ spec:
           - $valueFiles/app-of-apps/apps/100_security/vault/values.yaml
     - ref: valueFiles
       repoURL: https://github.com/Hiroshi-N-S/local-devops.git
-      targetRevision: refactor/app-of-apps/domain-based
+      targetRevision: develop/0.1.0
