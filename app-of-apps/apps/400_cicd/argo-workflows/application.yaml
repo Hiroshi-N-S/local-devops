@@ -33,4 +33,31 @@ spec:
           - $valueFiles/app-of-apps/apps/400_cicd/argo-workflows/values.yaml
     - ref: valueFiles
       repoURL: https://github.com/Hiroshi-N-S/local-devops.git
-      targetRevision: develop
+      targetRevision: refactor/app-of-apps/secret-management
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: devops-argo-workflows-externalsecrets
+  namespace: devops-system
+  annotations:
+    argocd.argoproj.io/sync-wave: "420"
+  finalizers:
+    - argocd.argoproj.io/resources-finalizer
+spec:
+  project: devops-project
+  destination:
+    name: in-cluster
+    namespace: devops-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: false
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+  sources:
+    - path: app-of-apps/apps/400_cicd/argo-workflows/manifests
+      repoURL: https://github.com/Hiroshi-N-S/local-devops.git
+      targetRevision: refactor/app-of-apps/secret-management
