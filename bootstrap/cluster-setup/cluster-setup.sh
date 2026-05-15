@@ -138,12 +138,12 @@ deploy_argocd() {
 
   local APP_MANIFEST_FILE="$ARGOCD_APP_DIR/application.yaml"
 
-  local DESTINATION_NAMESPACE=$(cat $APP_MANIFEST_FILE | yq -r '.spec.destination.namespace')
+  local DESTINATION_NAMESPACE=$(cat $APP_MANIFEST_FILE | yq -r '.spec.destination.namespace' | head -n 1)
 
-  local APP_NAME=$(   cat $APP_MANIFEST_FILE | yq -r '.metadata.name' )
-  local CHART_NAME=$( cat $APP_MANIFEST_FILE | yq -r '.spec.sources[] | select(has("chart")) | .chart')
-  local REPO_URL=$(   cat $APP_MANIFEST_FILE | yq -r '.spec.sources[] | select(has("chart")) | .repoURL')
-  local TARGET_REV=$( cat $APP_MANIFEST_FILE | yq -r '.spec.sources[] | select(has("chart")) | .targetRevision')
+  local APP_NAME=$(  cat $APP_MANIFEST_FILE | yq -r '.metadata.name' | head -n 1)
+  local CHART_NAME=$(cat $APP_MANIFEST_FILE | yq -r '.spec.sources[] | select(has("chart")) | .chart' | head -n 1)
+  local REPO_URL=$(  cat $APP_MANIFEST_FILE | yq -r '.spec.sources[] | select(has("chart")) | .repoURL' | head -n 1)
+  local TARGET_REV=$(cat $APP_MANIFEST_FILE | yq -r '.spec.sources[] | select(has("chart")) | .targetRevision' | head -n 1)
 
   info "Application parameters:"
   info " -> App name             : $APP_NAME"
