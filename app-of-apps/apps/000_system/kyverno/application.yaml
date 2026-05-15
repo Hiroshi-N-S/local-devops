@@ -33,7 +33,7 @@ spec:
           - $valueFiles/app-of-apps/apps/000_system/kyverno/values.yaml
     - ref: valueFiles
       repoURL: https://github.com/Hiroshi-N-S/local-devops.git
-      targetRevision: refactor/app-of-apps/secret-management
+      targetRevision: develop
 
 ---
 apiVersion: argoproj.io/v1alpha1
@@ -60,4 +60,4 @@ spec:
   sources:
     - path: app-of-apps/apps/000_system/kyverno/manifests
       repoURL: https://github.com/Hiroshi-N-S/local-devops.git
-      targetRevision: refactor/app-of-apps/secret-management
+      targetRevision: develop
