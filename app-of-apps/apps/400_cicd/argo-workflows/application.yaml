@@ -33,7 +33,7 @@ spec:
           - $valueFiles/app-of-apps/apps/400_cicd/argo-workflows/values.yaml
     - ref: valueFiles
       repoURL: https://github.com/Hiroshi-N-S/local-devops.git
-      targetRevision: feat/renovate
+      targetRevision: develop
 
 ---
 apiVersion: argoproj.io/v1alpha1
@@ -60,4 +60,4 @@ spec:
   sources:
     - path: app-of-apps/apps/400_cicd/argo-workflows/manifests
       repoURL: https://github.com/Hiroshi-N-S/local-devops.git
-      targetRevision: feat/renovate
+      targetRevision: develop
