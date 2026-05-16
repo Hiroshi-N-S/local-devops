@@ -1,0 +1,16 @@
+replicaCount: 1
+
+configuration:
+  logging:
+    minimumLevel: Information
+  watcher:
+    timeout: 60
+  kubernetes:
+    skipTlsVerify: false
+
+rbac:
+  enabled: true
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true

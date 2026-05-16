@@ -1,0 +1,110 @@
+---
+## Custom resource configuration
+crds:
+  # -- Install and upgrade CRDs
+  install: true
+
+## Argo Configs
+configs:
+  # Argo CD configuration parameters
+  ## Ref: https://github.com/argoproj/argo-cd/blob/master/docs/operator-manual/argocd-cmd-params-cm.yaml
+  params:
+    create: true
+    server.insecure: true
+
+  # Argo CD RBAC policy configuration
+  ## Ref: https://github.com/argoproj/argo-cd/blob/master/docs/operator-manual/rbac.md
+  rbac:
+    # -- Create the argocd-rbac-cm configmap with ([Argo CD RBAC policy]) definitions.
+    # If false, it is expected the configmap will be created by something else.
+    # Argo CD will not work if there is no configmap created with the name above.
+    create: true
+
+    # -- The name of the default role which Argo CD will falls back to, when authorizing API requests (optional).
+    # If omitted or empty, users may be still be able to login, but will see no apps, projects, etc...
+    ## Ref: https://argo-cd.readthedocs.io/en/stable/operator-manual/rbac/
+    policy.default: role:readonly
+
+    # -- File containing user-defined policies and role definitions.
+    # @default -- '' (See [values.yaml])
+    policy.csv: |
+      g, argo-cd-admin, role:admin
+      g, argo-cd-readonly, role:readonly
+
+  # General Argo CD configuration. Any values you put under '.configs.cm' are passed to argocd-cm ConfigMap.
+  ## Ref: https://github.com/argoproj/argo-cd/blob/master/docs/operator-manual/argocd-cm.yaml
+  cm:
+    # -- OIDC configuration.
+    ## Ref: https://argo-cd.readthedocs.io/en/stable/operator-manual/user-management/keycloak/
+    oidc.tls.insecure.skip.verify: false
+    oidc.config: |
+      name: Keycloak
+      issuer: $argocd-oidc:issuer_url
+      clientID: $argocd-oidc:client_id
+      clientSecret: $argocd-oidc:client_secret
+      requestedIDTokenClaims:
+        groups:
+          essential: true
+      requestedScopes:
+        - openid
+        - profile
+        - realm-roles
+
+    # -- Create the argocd-cm configmap for [declarative setup]
+    create: true
+
+    # -- Enable local admin user
+    ## Ref: https://argo-cd.readthedocs.io/en/latest/faq/#how-to-disable-admin-user
+    admin.enabled: false
+    users.anonymous.enabled: false
+    url: https://argocd.devenv.local:8443
+
+## Globally shared configuration
+global:
+  # -- Default domain used by all components
+  ## Used for ingresses, certificates, SSO, notifications, etc.
+  domain: argocd.devenv.local
+
+## Server
+server:
+  # Argo CD server ingress configuration
+  ingress:
+    # -- Enable an ingress resource for the Argo CD server
+    enabled: true
+
+    # -- Additional ingress annotations
+    ## Ref: https://argo-cd.readthedocs.io/en/stable/operator-manual/ingress/#option-1-ssl-passthrough
+    annotations:
+      kubernetes.io/ingress.class: traefik
+      traefik.ingress.kubernetes.io/router.entrypoints: websecure
+
+    # -- Defines which ingress controller will implement the resource
+    ingressClassName: traefik
+
+    # -- Enable TLS configuration for the hostname defined at 'server.ingress.hostname'
+    ## TLS certificate will be retrieved from a TLS secret 'argocd-server-tls'
+    ## You can create this secret via 'certificate' or 'certificateSecret' option
+    tls: false
+
+  # -- Additional volumeMounts to the server main container
+  volumeMounts:
+    - name: local-devenv-tls-vol
+      mountPath: /etc/ssl/certs/traefik-tls.crt
+      subPath: tls.crt
+      readOnly: true
+  
+  # -- Additional volumes to the server pod
+  volumes:
+    - name: local-devenv-tls-vol
+      projected:
+        sources:
+          - secret:
+              name: local-devenv-tls
+
+## Repo Server
+repoServer:
+  # -- envFrom to pass to repo server
+  # @default -- '[]' (See [values.yaml])
+  envFrom:
+    - secretRef:
+        name: proxy-env

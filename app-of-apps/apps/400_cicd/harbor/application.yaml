@@ -1,0 +1,63 @@
+---
+# docs:
+#   - https://argo-cd.readthedocs.io/en/stable/operator-manual/declarative-setup/
+#   - https://argo-cd.readthedocs.io/en/stable/user-guide/sync-waves/
+#   - https://github.com/argoproj/argo-cd/blob/master/docs/operator-manual/application.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: devops-harbor
+  namespace: devops-system
+  annotations:
+    argocd.argoproj.io/sync-wave: "400"
+  finalizers:
+    - argocd.argoproj.io/resources-finalizer
+spec:
+  project: devops-project
+  destination:
+    name: in-cluster
+    namespace: devops-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: false
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+  sources:
+    - chart: harbor
+      repoURL: https://helm.goharbor.io
+      targetRevision: 1.17.5
+      helm:
+        valueFiles:
+          - $valueFiles/app-of-apps/apps/400_cicd/harbor/values.yaml
+    - ref: valueFiles
+      repoURL: https://github.com/Hiroshi-N-S/local-devops.git
+      targetRevision: develop
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: devops-harbor-externalsecrets
+  namespace: devops-system
+  annotations:
+    argocd.argoproj.io/sync-wave: "400"
+  finalizers:
+    - argocd.argoproj.io/resources-finalizer
+spec:
+  project: devops-project
+  destination:
+    name: in-cluster
+    namespace: devops-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: false
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+  sources:
+    - path: app-of-apps/apps/400_cicd/harbor/manifests
+      repoURL: https://github.com/Hiroshi-N-S/local-devops.git
+      targetRevision: develop

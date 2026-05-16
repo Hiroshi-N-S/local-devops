@@ -1,0 +1,36 @@
+---
+# docs:
+#   - https://argo-cd.readthedocs.io/en/stable/operator-manual/declarative-setup/
+#   - https://argo-cd.readthedocs.io/en/stable/user-guide/sync-waves/
+#   - https://github.com/argoproj/argo-cd/blob/master/docs/operator-manual/application.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: devops-csi-driver-nfs
+  namespace: devops-system
+  annotations:
+    argocd.argoproj.io/sync-wave: "20"
+  finalizers:
+    - argocd.argoproj.io/resources-finalizer
+spec:
+  project: devops-project
+  destination:
+    name: in-cluster
+    namespace: kube-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: false
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+  sources:
+    - chart: csi-driver-nfs
+      repoURL: https://raw.githubusercontent.com/kubernetes-csi/csi-driver-nfs/master/charts
+      targetRevision: 4.13.1
+      helm:
+        valueFiles:
+          - $valueFiles/app-of-apps/apps/000_system/csi-driver-nfs/values.yaml
+    - ref: valueFiles
+      repoURL: https://github.com/Hiroshi-N-S/local-devops.git
+      targetRevision: develop

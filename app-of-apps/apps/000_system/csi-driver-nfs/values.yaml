@@ -1,0 +1,71 @@
+---
+# Ref: https://github.com/kubernetes-csi/csi-driver-nfs/tree/master/charts
+driver:
+  name: nfs.csi.k8s.io
+
+feature:
+  enableFSGroupPolicy: false
+
+controller:
+  name: csi-driver-nfs-controller
+  replicas: 1
+  runOnControlPlane: true
+  defaultOnDeletePolicy: Retain
+  enableSnapshotCompression: true
+
+node:
+  name: csi-driver-nfs-node
+
+storageClasses:
+  - name: ssd-nfs-retain
+    annotations:
+      storageclass.kubernetes.io/is-default-class: 'false'
+      storageclass.kubernetes.io/storage-type: ssd
+    parameters:
+      server: nfs.devenv.local
+      share: /mnt/ssd-pool/k8s-storage-nfs
+      subDir: "retain-${pvc.metadata.namespace}-${pvc.metadata.name}"
+      mountPermissions: "0777"
+      onDelete: Retain
+    reclaimPolicy: Retain
+    volumeBindingMode: Immediate
+    mountOptions:
+      - noatime
+      - nfsvers=4.1
+      - hard
+      - noresvport
+      - intr
+
+  - name: ssd-nfs-delete
+    annotations:
+      storageclass.kubernetes.io/is-default-class: 'false'
+      storageclass.kubernetes.io/storage-type: ssd
+    parameters:
+      server: nfs.devenv.local
+      share: /mnt/ssd-pool/k8s-storage-nfs
+      subDir: "delete-${pvc.metadata.namespace}-${pvc.metadata.name}"
+      mountPermissions: "0777"
+      onDelete: Delete
+    reclaimPolicy: Delete
+    volumeBindingMode: Immediate
+    mountOptions:
+      - noatime
+      - nfsvers=4.1
+      - hard
+      - noresvport
+      - intr
+
+externalSnapshotter:
+  enabled: false
+  name: csi-nfs-snapshot-controller
+  deletionPolicy: Delete
+  controller:
+    replicas: 1
+  # Create volume snapshot CRDs.
+  customResourceDefinitions:
+    enabled: true   #if set true, VolumeSnapshot, VolumeSnapshotContent and VolumeSnapshotClass CRDs will be created. Set it false, If they already exist in cluster.
+
+volumeSnapshotClass:
+  create: false
+  name: csi-nfs-snapshotclass
+  deletionPolicy: Delete

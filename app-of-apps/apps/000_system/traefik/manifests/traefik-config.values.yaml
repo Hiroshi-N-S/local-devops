@@ -1,0 +1,45 @@
+---
+apiVersion: helm.cattle.io/v1
+kind: HelmChartConfig
+metadata:
+  name: traefik
+spec:
+  valuesContent: |-
+    # ref: https://github.com/traefik/traefik-helm-chart/blob/master/traefik/values.yaml
+
+    # -- Create a default IngressClass for Traefik
+    ingressClass:
+      enabled: true
+      isDefaultClass: true
+
+    # -- Only dashboard & healthcheck IngressRoute are supported. It's recommended to create workloads CR outside of this Chart.
+    ingressRoute:
+      dashboard:
+        # -- Create an IngressRoute for the dashboard
+        enabled: false
+
+    ports:
+      web:
+        ## -- Enable this entrypoint as a default entrypoint. When a service doesn't explicitly set an entrypoint it will only use this entrypoint.
+        port: 80
+        # The port protocol (TCP/UDP)
+        protocol: TCP
+        # -- See [upstream documentation](https://kubernetes.io/docs/concepts/services-networking/service/#type-nodeport)
+        nodePort: 30080
+      websecure:
+        ## -- Enable this entrypoint as a default entrypoint. When a service doesn't explicitly set an entrypoint it will only use this entrypoint.
+        port: 443
+        ## -- The port protocol (TCP/UDP)
+        protocol: TCP
+        # -- See [upstream documentation](https://kubernetes.io/docs/concepts/services-networking/service/#type-nodeport)
+        nodePort: 30443
+
+    # --  See [upstream documentation](https://doc.traefik.io/traefik/routing/entrypoints/#tls)
+    tls:
+      enabled: true
+
+    # -- TLS Store are created as [TLSStore CRDs](https://doc.traefik.io/traefik/https/tls/#default-certificate). This is useful if you want to set a default certificate. See EXAMPLE.md for details.
+    tlsStore:
+      default:
+        defaultCertificate:
+          secretName: local-devenv-tls

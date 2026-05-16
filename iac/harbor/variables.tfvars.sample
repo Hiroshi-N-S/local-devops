@@ -1,0 +1,34 @@
+#
+# Harbor OIDC Configuration
+#
+
+harbor_oidc_config = {
+  primary_auth_mode = true
+  provider_name     = "<SAMPLE>"
+  issuer_endpoint   = "https://auth.devenv.local:8443/realms/devops"
+  client_id         = "harbor"
+  client_secret     = "<SAMPLE>"
+  groups_claim      = "groups"
+  admin_group       = "<SAMPLE>"
+  scopes            = [
+    "openid",
+    "email",
+    "profile",
+    "<SAMPLE>"
+  ]
+  verify_cert       = true
+  auto_onboard      = false
+}
+
+#
+# Harbor Provider Configuration
+#
+
+provider_config = {
+  url          = "https://registry.devenv.local:8443"
+  username     = "<SAMPLE>"
+  password     = "<SAMPLE>"
+  bearer_token = ""
+  tls_insecure = false
+  api_version  = 2
+}

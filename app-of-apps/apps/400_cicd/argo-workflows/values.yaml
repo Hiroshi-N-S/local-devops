@@ -1,0 +1,384 @@
+---
+## Custom resource configuration
+crds:
+  # -- Install and upgrade CRDs
+  install: true
+
+  # -- Use full CRDs with complete OpenAPI schemas. When false, uses minified CRDs with x-kubernetes-preserve-unknown-fields.
+  # Full CRDs are very large and are installed via a pre-install/pre-upgrade hook Job that uses server-side apply.
+  full: false
+
+server:
+  # -- Deploy the Argo Server
+  enabled: true
+  # -- Server name string
+  name: server
+
+  # -- Run the argo server in "secure" mode. Configure this value instead of `--secure` in extraArgs.
+  ## See the following documentation for more details on secure mode:
+  ## https://argo-workflows.readthedocs.io/en/stable/tls/
+  secure: false
+
+  ## Ingress configuration.
+  # ref: https://kubernetes.io/docs/concepts/services-networking/ingress/
+  ingress:
+    # -- Enable an ingress resource
+    enabled: true
+
+    # -- Additional ingress annotations
+    annotations:
+      kubernetes.io/ingress.class: traefik
+      traefik.ingress.kubernetes.io/router.entrypoints: websecure
+
+    # -- Defines which ingress controller will implement the resource
+    ingressClassName: traefik
+
+    # -- List of ingress hosts
+    ## Hostnames must be provided if Ingress is enabled.
+    ## Secrets must be manually created in the namespace
+    hosts:
+      - workflow.devenv.local
+
+    # -- List of ingress paths
+    paths:
+      - /
+
+    # -- Ingress path type. One of `Exact`, `Prefix` or `ImplementationSpecific`
+    pathType: Prefix
+
+  # -- A list of supported authentication modes. Available values are `server`, `client`, or `sso`. If you provide sso, please configure `.Values.server.sso` as well.
+  ## Ref: https://argo-workflows.readthedocs.io/en/stable/argo-server-auth-mode/
+  authModes:
+    - sso
+
+  # SSO configuration when SSO is specified as a server auth mode.
+  sso:
+    # -- Create SSO configuration. If you set `true` , please also set `.Values.server.authModes` as `sso`.
+    enabled: true
+
+    # -- The root URL of the OIDC identity provider
+    issuer: https://auth.devenv.local:8443/realms/devops
+
+    clientId:
+      # -- Name of secret to retrieve the app OIDC client ID
+      name: argoworkflows-sso
+      # -- Key of secret to retrieve the app OIDC client ID
+      key: client_id
+
+    clientSecret:
+      # -- Name of a secret to retrieve the app OIDC client secret
+      name: argoworkflows-sso
+      # -- Key of a secret to retrieve the app OIDC client secret
+      key: client_secret
+
+    # -- The OIDC redirect URL. Should be in the form <argo-root-url>/oauth2/callback.
+    redirectUrl: "https://workflow.devenv.local:8443/oauth2/callback"
+
+    rbac:
+      # -- Adds ServiceAccount Policy to server (Cluster)Role.
+      enabled: true
+
+    # -- Scopes requested from the SSO ID provider
+    ## The 'groups' scope requests group membership information, which is usually used for authorization decisions.
+    scopes:
+      - openid
+      - profile
+      - realm-roles
+
+    # -- Override claim name for OIDC groups
+    customGroupClaimName: groups
+
+    # -- Specify the user info endpoint that contains the groups claim
+    ## Configure this if your OIDC provider provides groups information only using the user-info endpoint (e.g. Okta)
+    userInfoPath: /protocol/openid-connect/userinfo
+
+    # -- Skip TLS verification for the HTTP client
+    insecureSkipVerify: false
+
+    # -- Filter the groups returned by the OIDC provider
+    ## A logical "OR" is used between each regex in the list
+    filterGroupsRegex:
+      - '^argo-workflows.*'
+
+  # -- Additional volume mounts to the server main container.
+  volumeMounts:
+    - name: local-devenv-tls-vol
+      mountPath: /etc/ssl/certs/traefik-tls.crt
+      subPath: tls.crt
+      readOnly: true
+
+  # -- Additional volumes to the server pod.
+  volumes:
+    - name: local-devenv-tls-vol
+      projected:
+        sources:
+          - secret:
+              name: local-devenv-tls
+
+# -- Restrict Argo to operate only in a single namespace (the namespace of the
+# Helm release) by apply Roles and RoleBindings instead of the Cluster
+# equivalents, and start workflow-controller with the --namespaced flag. Use it
+# in clusters with strict access policy.
+singleNamespace: false
+
+workflow:
+  serviceAccount:
+    # -- Specifies whether a service account should be created
+    create: true
+    # -- Service account which is used to run workflows
+    name: argo-workflow
+
+  rbac:
+    # -- Adds Role and RoleBinding for the above specified service account to be able to run workflows.
+    # A Role and Rolebinding pair is also created for each namespace in controller.workflowNamespaces (see below)
+    create: true
+
+controller:
+  rbac:
+    # -- Adds Role and RoleBinding for the controller.
+    create: true
+
+  # -- Limits the maximum number of incomplete workflows in a namespace
+  namespaceParallelism: 4
+
+  # -- Number of workflow workers
+  workflowWorkers: 4
+
+  # -- Default values that will apply to all Workflows from this controller, unless overridden on the Workflow-level.
+  # Only valid for 2.7+
+  ## See more: https://argo-workflows.readthedocs.io/en/stable/default-workflow-specs/
+  workflowDefaults:
+    spec:
+      ttlStrategy:
+        secondsAfterCompletion: 86400
+      serviceAccountName: argo-workflow
+      # Ref: https://argo-workflows.readthedocs.io/en/stable/artifact-repository-ref/
+      artifactRepositoryRef:
+        configMap: argoworkflows-artifact-repositories
+        key: default-s3-artifact-repository
+
+  # -- enable Workflow Archive to store the status of workflows. Postgres and MySQL (>= 5.7.8) are available.
+  ## Ref: https://argo-workflows.readthedocs.io/en/stable/workflow-archive/
+  persistence:
+    # # save the entire workflow into etcd and DB
+    # nodeStatusOffLoad: true
+    # enable archiving of old workflows
+    archive: true
+    postgresql:
+      host: argoworkflows-postgres
+      port: 5432
+      database: argo
+      tableName: workflows
+      # the database secrets must be in the same namespace of the controller
+      userNameSecret:
+        name: argoworkflows-postgres-config
+        key: POSTGRES_USER
+      passwordSecret:
+        name: argoworkflows-postgres-config
+        key: POSTGRES_PASSWORD
+      ssl: false
+      # sslMode must be one of: disable, require, verify-ca, verify-full
+      # you can find more information about those ssl options here: https://godoc.org/github.com/lib/pq
+      sslMode: disable
+
+# -- Use static credentials for S3 (eg. when not using AWS IRSA)
+useStaticCredentials: false
+artifactRepository:
+  # -- Archive the main container logs as an artifact
+  archiveLogs: false
+
+# -- The section of [artifact repository ref](https://argo-workflows.readthedocs.io/en/stable/artifact-repository-ref/).
+# Each map key is the name of configmap
+# @default -- `{}` (See [values.yaml])
+artifactRepositoryRef: {}
+
+# -- Array of extra K8s manifests to deploy
+extraObjects:
+  #
+  # ServiceAccounts for RBAC rules.
+  #
+  # Refer to the following documentation for more details on how to configure RBAC for Argo Workflows:
+  # - https://argo-workflows.readthedocs.io/en/latest/service-account-secrets/
+  # - https://argo-workflows.readthedocs.io/en/latest/argo-server-sso/#sso-rbac
+  #
+
+  # -- The admin role for Argo Workflows. This service account has permissions to view and manage all Argo Workflows resources.
+
+  - apiVersion: v1
+    kind: ServiceAccount
+    metadata:
+      name: argo-workflows-admin
+      annotations:
+        workflows.argoproj.io/rbac-rule: "'argo-workflows-admin' in groups"
+        workflows.argoproj.io/rbac-rule-precedence: "1"
+
+  - apiVersion: v1
+    kind: Secret
+    metadata:
+      name: argo-workflows-admin.service-account-token
+      annotations:
+        kubernetes.io/service-account.name: argo-workflows-admin
+    type: kubernetes.io/service-account-token
+
+  - apiVersion: rbac.authorization.k8s.io/v1
+    kind: ClusterRoleBinding
+    metadata:
+      name: argo-workflows-admin-binding-to-admin
+    roleRef:
+      apiGroup: rbac.authorization.k8s.io
+      kind: ClusterRole
+      name: "{{ .Release.Name }}-admin"
+    subjects:
+      - kind: ServiceAccount
+        name: argo-workflows-admin
+        namespace: "{{ .Release.Namespace }}"
+
+  - apiVersion: rbac.authorization.k8s.io/v1
+    kind: ClusterRoleBinding
+    metadata:
+      name: argo-workflows-admin-binding-to-server
+    roleRef:
+      apiGroup: rbac.authorization.k8s.io
+      kind: ClusterRole
+      name: "{{ .Release.Name }}-server"
+    subjects:
+      - kind: ServiceAccount
+        name: argo-workflows-admin
+        namespace: "{{ .Release.Namespace }}"
+
+  # -- The edit role for managing workflows.
+
+  - apiVersion: v1
+    kind: ServiceAccount
+    metadata:
+      name: argo-workflows-edit
+      annotations:
+        workflows.argoproj.io/rbac-rule: "'argo-workflows-edit' in groups"
+        workflows.argoproj.io/rbac-rule-precedence: "0"
+
+  - apiVersion: v1
+    kind: Secret
+    metadata:
+      name: argo-workflows-edit.service-account-token
+      annotations:
+        kubernetes.io/service-account.name: argo-workflows-edit
+    type: kubernetes.io/service-account-token
+
+  - apiVersion: rbac.authorization.k8s.io/v1
+    kind: ClusterRoleBinding
+    metadata:
+      name: argo-workflows-edit-binding-to-edit
+    roleRef:
+      apiGroup: rbac.authorization.k8s.io
+      kind: ClusterRole
+      name: "{{ .Release.Name }}-edit"
+    subjects:
+      - kind: ServiceAccount
+        name: argo-workflows-edit
+        namespace: "{{ .Release.Namespace }}"
+
+  # -- The view role for read-only access to workflows.
+
+  - apiVersion: v1
+    kind: ServiceAccount
+    metadata:
+      name: argo-workflows-view
+      annotations:
+        workflows.argoproj.io/rbac-rule: "'argo-workflows-view' in groups"
+        workflows.argoproj.io/rbac-rule-precedence: "0"
+
+  - apiVersion: v1
+    kind: Secret
+    metadata:
+      name: argo-workflows-view.service-account-token
+      annotations:
+        kubernetes.io/service-account.name: argo-workflows-view
+    type: kubernetes.io/service-account-token
+
+  - apiVersion: rbac.authorization.k8s.io/v1
+    kind: ClusterRoleBinding
+    metadata:
+      name: argo-workflows-view-binding-to-view
+    roleRef:
+      apiGroup: rbac.authorization.k8s.io
+      kind: ClusterRole
+      name: "{{ .Release.Name }}-view"
+    subjects:
+      - kind: ServiceAccount
+        name: argo-workflows-view
+        namespace: "{{ .Release.Namespace }}"
+
+  #
+  # PostgreSQL database for workflow persistence.
+  #
+
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      name: argoworkflows-postgres
+      labels:
+        app: "{{ .Release.Name }}-postgres"
+    spec:
+      selector:
+        app: "{{ .Release.Name }}-postgres"
+      ports:
+        - protocol: TCP
+          port: 5432
+          targetPort: 5432
+      type: ClusterIP
+
+  - apiVersion: apps/v1
+    kind: StatefulSet
+    metadata:
+      name: "{{ .Release.Name }}-postgres"
+      labels:
+        app: "{{ .Release.Name }}-postgres"
+    spec:
+      serviceName: "{{ .Release.Name }}-postgres"
+      replicas: 1
+      selector:
+        matchLabels:
+          app: "{{ .Release.Name }}-postgres"
+      template:
+        metadata:
+          labels:
+            app: "{{ .Release.Name }}-postgres"
+        spec:
+          securityContext:
+            runAsUser: 999
+            runAsGroup: 999
+          containers:
+            - name: "{{ .Release.Name }}-postgres"
+              image: postgres:17.9
+              env:
+                - name: POSTGRES_DB
+                  value: argo
+                - name: POSTGRES_LOG_STATEMENT
+                  value: all
+                - name: PGDATA
+                  value: /var/lib/postgresql/data/pgdata
+              envFrom:
+                - secretRef:
+                    name: argoworkflows-postgres-config
+              ports:
+                - name: postgres
+                  containerPort: 5432
+              volumeMounts:
+                # Using volume mount for PostgreSQL's data folder as it is otherwise not writable
+                - name: argoworkflows-postgres-data
+                  mountPath: /var/lib/postgresql/data
+          volumes:
+            - name: argoworkflows-postgres-data
+              persistentVolumeClaim:
+                claimName: argoworkflows-postgres-data
+      volumeClaimTemplates:
+        - metadata:
+            name: argoworkflows-postgres-data
+          spec:
+            accessModes:
+              - ReadWriteOnce
+            storageClassName: ssd-nfs-retain
+            volumeMode: Filesystem
+            resources:
+              requests:
+                storage: 8Gi

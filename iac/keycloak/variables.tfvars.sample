@@ -1,0 +1,228 @@
+#
+# Realms
+#
+
+realms = {
+  devops = {
+    display_name                        = "DevOps"
+    users = {
+      <SAMPLE_USER> = {
+        email                           = "<SAMPLE>"
+        first_name                      = "<SAMPLE>"
+        last_name                       = "<SAMPLE>"
+        group_names                     = [
+          "devops-group/<SAMPLE>"
+        ]
+      }
+    }
+    groups = {
+      devops-group = {
+        description                     = "DevOps Group"
+        child_groups = {
+          admin = {
+            description                 = "Admin group with all permissions"
+            role_names                  = [
+              "argo-workflows-admin",
+              "argo-cd-admin",
+              "consoleAdmin",
+              "harbor-admin"
+            ]
+          }
+          maintainer = {
+            description                 = "Maintainer group with permissions to manage applications and resources"
+            role_names                  = [
+              "argo-workflows-admin",
+              "argo-cd-admin",
+              "readwrite",
+              "harbor-admin"
+            ]
+          }
+          developer = {
+            description                 = "Developer group with permissions to manage applications"
+            role_names                  = [
+              "argo-workflows-edit",
+              "readwrite",
+              "harbor-user"
+            ]
+          }
+          viewer = {
+            description                 = "Viewer group with permissions to view applications and resources"
+            role_names                  = [
+              "argo-workflows-view",
+              "readonly",
+              "harbor-user"
+            ]
+          }
+        }
+      }
+    }
+    clients = {
+      "argo-workflows" = {
+        name                            = "argo-workflows"
+        description                     = "Argo Workflows Client"
+
+        standard_flow_enabled           = true
+        direct_access_grants_enabled    = true
+
+        root_url                        = "https://workflow.devenv.local:8443"
+        base_url                        = "/login"
+        valid_redirect_uris             = [ "https://workflow.devenv.local:8443/*" ]
+        valid_post_logout_redirect_uris = [ "https://workflow.devenv.local:8443/login" ]
+        web_origins                     = [ "https://workflow.devenv.local:8443/login" ]
+        admin_url                       = "https://workflow.devenv.local:8443"
+
+        default_scopes                  = [ "profile" ]
+
+        roles = {
+          "argo-workflows-admin" = {
+            description                 = "Admin role for Argo Workflows"
+          }
+          "argo-workflows-edit" = {
+            description                 = "Edit role for Argo Workflows"
+          }
+          "argo-workflows-view" = {
+            description                 = "View role for Argo Workflows"
+          }
+        }
+      }
+      "argo-cd" = {
+        name                            = "argo-cd"
+        description                     = "Argo CD Client"
+
+        standard_flow_enabled           = true
+        direct_access_grants_enabled    = true
+
+        root_url                        = "https://argocd.devenv.local:8443"
+        base_url                        = "/applications"
+        valid_redirect_uris             = [ "https://argocd.devenv.local:8443/auth/callback" ]
+        valid_post_logout_redirect_uris = [ "https://argocd.devenv.local:8443" ]
+        web_origins                     = [ "https://argocd.devenv.local:8443" ]
+        admin_url                       = "https://argocd.devenv.local:8443"
+
+        default_scopes                  = [ "profile" ]
+
+        roles = {
+          "argo-cd-admin" = {
+            description                 = "Admin role for Argo CD"
+          }
+          "argo-cd-readonly" = {
+            description                 = "Readonly role for Argo CD"
+          }
+        }
+      }
+            "prometheus-grafana" = {
+        name                            = "prometheus-grafana"
+        description                     = "Prometheus & Grafana Client"
+
+        standard_flow_enabled           = true
+        direct_access_grants_enabled    = true
+
+        root_url                        = "https://grafana.prometheus.devenv.local:8443"
+        base_url                        = "/"
+        valid_redirect_uris             = [ "https://grafana.prometheus.devenv.local:8443/login/generic_oauth" ]
+        valid_post_logout_redirect_uris = [ "https://grafana.prometheus.devenv.local:8443" ]
+        web_origins                     = [ "https://grafana.prometheus.devenv.local:8443" ]
+        admin_url                       = "https://grafana.prometheus.devenv.local:8443"
+
+        default_scopes                  = [ "profile", "email", "roles" ]
+
+        roles  = {
+          prometheus-grafana-admin = {
+            description                 = "Admin role for Prometheus / Grafana"
+          }
+          prometheus-grafana-editor = {
+            description                 = "Editor role for Prometheus / Grafana"
+          }
+          prometheus-grafana-viewer = {
+            description                 = "Viewer role for Prometheus / Grafana"
+          }
+        }
+      }
+      "minio" = {
+        name                            = "minio"
+        description                     = "MinIO Client"
+
+        standard_flow_enabled           = true
+        direct_access_grants_enabled    = true
+
+        root_url                        = "https://minio.devenv.local:8443"
+        base_url                        = "/realms/devops/account/"
+        valid_redirect_uris             = [ "*" ]
+        valid_post_logout_redirect_uris = [ "https://minio.devenv.local:8443" ]
+        web_origins                     = [ "https://minio.devenv.local:8443" ]
+        admin_url                       = "https://minio.devenv.local:8443"
+
+        default_scopes                  = [ "profile", "roles" ]
+        client_scopes = {
+          "minio-authorization" = {
+            description                 = "Client scope for MinIO authorization"
+            include_in_token_scope      = true
+            user_realm_role_mappers = {
+              "realm-role" = {
+                token_claim_name        = "policy"
+                claim_json_type         = "String"
+                add_to_id_token         = true
+                add_to_access_token     = true
+                multivalued             = true
+              }
+            }
+          }
+        }
+
+        roles  = {
+          consoleAdmin = {
+            description                 = "Admin role for MinIO"
+          }
+          diagnostics = {
+            description                 = "Diagnostics role for MinIO"
+          }
+          readwrite = {
+            description                 = "Readwrite role for MinIO"
+          }
+          writeonly = {
+            description                 = "Readwrite role for MinIO"
+          }
+          readonly = {
+            description                 = "Readonly role for MinIO"
+          }
+        }
+      }
+      "harbor" = {
+        name                            = "harbor"
+        description                     = "Harbor Client"
+
+        standard_flow_enabled           = true
+        direct_access_grants_enabled    = true
+
+        root_url                        = "https://registry.devenv.local:8443"
+        base_url                        = "/"
+        valid_redirect_uris             = [ "https://registry.devenv.local:8443/c/oidc/callback" ]
+        valid_post_logout_redirect_uris = [ "https://registry.devenv.local:8443" ]
+        web_origins                     = [ "https://registry.devenv.local:8443" ]
+        admin_url                       = "https://registry.devenv.local:8443"
+
+        default_scopes                  = [ "profile", "email" ]
+
+        roles = {
+          "harbor-admin" = {
+            description                 = "Admin role for Harbor"
+          }
+          "harbor-user" = {
+            description                 = "User role for Harbor"
+          }
+        }
+      }
+    }
+  }
+}
+
+#
+# Keycloak Provider Configuration
+#
+
+provider_config = {
+  client_id     = "terraform"
+  client_secret = "<SAMPLE>"
+  url           = "https://auth.devenv.local:8443"
+  tls_insecure  = true
+}

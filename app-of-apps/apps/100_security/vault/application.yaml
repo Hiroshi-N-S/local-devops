@@ -1,0 +1,36 @@
+---
+# docs:
+#   - https://argo-cd.readthedocs.io/en/stable/operator-manual/declarative-setup/
+#   - https://argo-cd.readthedocs.io/en/stable/user-guide/sync-waves/
+#   - https://github.com/argoproj/argo-cd/blob/master/docs/operator-manual/application.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: devops-vault
+  namespace: devops-system
+  annotations:
+    argocd.argoproj.io/sync-wave: "100"
+  finalizers:
+    - argocd.argoproj.io/resources-finalizer
+spec:
+  project: devops-project
+  destination:
+    name: in-cluster
+    namespace: devops-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: false
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+  sources:
+    - chart: vault
+      repoURL: https://helm.releases.hashicorp.com
+      targetRevision: 0.31.0
+      helm:
+        valueFiles:
+          - $valueFiles/app-of-apps/apps/100_security/vault/values.yaml
+    - ref: valueFiles
+      repoURL: https://github.com/Hiroshi-N-S/local-devops.git
+      targetRevision: develop
