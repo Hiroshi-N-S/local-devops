@@ -4,7 +4,7 @@
         "config:recommended",
         ":dependencyDashboard"
     ],
-    "baseBranches": [
+    "baseBranchPatterns": [
         "feat/renovate"
     ],
     "timezone": "Asia/Tokyo",

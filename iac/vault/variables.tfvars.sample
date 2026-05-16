@@ -44,7 +44,7 @@ kubernetes_auth = {
               "repositories": [
                 "<SAMPLE>"
               ],
-              "baseBranches": [
+              "baseBranchPatterns": [
                 "<SAMPLE>"
               ],
               "onboarding": false,
