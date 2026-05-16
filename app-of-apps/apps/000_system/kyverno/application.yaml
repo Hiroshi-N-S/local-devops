@@ -27,7 +27,7 @@ spec:
   sources:
     - chart: kyverno
       repoURL: https://kyverno.github.io/kyverno/
-      targetRevision: 3.7.1
+      targetRevision: 3.8.0
       helm:
         valueFiles:
           - $valueFiles/app-of-apps/apps/000_system/kyverno/values.yaml
