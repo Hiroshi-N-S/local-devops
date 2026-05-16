@@ -349,7 +349,7 @@ extraObjects:
             runAsGroup: 999
           containers:
             - name: "{{ .Release.Name }}-postgres"
-              image: postgres:17.9
+              image: postgres:17.10
               env:
                 - name: POSTGRES_DB
                   value: argo
