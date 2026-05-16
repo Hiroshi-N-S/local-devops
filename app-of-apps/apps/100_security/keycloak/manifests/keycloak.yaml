@@ -193,7 +193,7 @@ spec:
         runAsGroup: 999
       containers:
         - name: keycloak-postgres
-          image: postgres:17.9
+          image: postgres:17.10
           env:
             - name: POSTGRES_LOG_STATEMENT
               value: all
