@@ -5,7 +5,8 @@
         ":dependencyDashboard"
     ],
     "baseBranchPatterns": [
-        "feat/renovate"
+        "develop",
+        "main"
     ],
     "timezone": "Asia/Tokyo",
     "schedule": [
