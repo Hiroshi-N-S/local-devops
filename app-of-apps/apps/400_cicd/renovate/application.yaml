@@ -25,7 +25,7 @@ spec:
       - CreateNamespace=true
       - ServerSideApply=true
   sources:
-    - chart: renovate
+    - path: '.'
       repoURL: oci://ghcr.io/renovatebot/charts/renovate
       targetRevision: 46.154.3
       helm:
