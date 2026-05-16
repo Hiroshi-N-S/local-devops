@@ -33,6 +33,9 @@ kubernetes_auth = {
             }
             EOT
         }
+        renovate-github-token = {
+          "token" = "<SAMPLE>"
+        }
         argoworkflows-artifact-repositories = {
           "default-s3-artifact-repository" = <<-EOT
             archiveLogs: true
