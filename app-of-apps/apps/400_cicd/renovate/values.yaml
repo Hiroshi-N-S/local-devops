@@ -5,7 +5,7 @@
 
 cronjob:
   # -- Schedules the job to run using cron notation
-  schedule: '0 13 * * 6' # At 13:00 every Saturday
+  schedule: '0 * * * *' # Every hour
   # -- You can specify a time zone for a CronJob by setting timeZone to the name of a valid time zone. (starting with k8s 1.27) <https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/#time-zones>
   timeZone: 'Asia/Tokyo' # see https://en.wikipedia.org/wiki/List_of_tz_database_time_zones for valid names
   # -- If it is set to true, all subsequent executions are suspended. This setting does not apply to already started executions.
@@ -39,11 +39,12 @@ renovate:
       # -- Allow the cache to persist between runs
       enabled: false
 
+# -- Environment variables to add from existing secrets/configmaps. Uses the keys as variable name
+envFrom:
+  - secretRef:
+      name: renovate-github-token-env
+
+# -- Environment variables to set on the renovate container
 env:
-  - name: RENOVATE_TOKEN
-    valueFrom:
-      secretKeyRef:
-        name: renovate-github-token
-        key: token
   - name: LOG_LEVEL
     value: "debug"
