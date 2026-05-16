@@ -27,4 +27,4 @@ spec:
   sources:
     - path: app-of-apps/apps/000_system/traefik/manifests
       repoURL: https://github.com/Hiroshi-N-S/local-devops.git
-      targetRevision: develop
+      targetRevision: main
