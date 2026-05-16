@@ -10,7 +10,7 @@
     ],
     "timezone": "Asia/Tokyo",
     "schedule": [
-        "after 2am and before 8am on weekdays"
+        "after 6pm and before 9pm every weekday"
     ],
     "enabledManagers": [
         "helm-values",
