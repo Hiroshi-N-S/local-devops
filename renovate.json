@@ -1,0 +1,170 @@
+{
+    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+    "extends": [
+        "config:recommended",
+        ":dependencyDashboard"
+    ],
+    "baseBranchPatterns": [
+        "develop",
+        "main"
+    ],
+    "timezone": "Asia/Tokyo",
+    "schedule": [
+        "after 2am and before 8am on weekdays"
+    ],
+    "enabledManagers": [
+        "helm-values",
+        "helmv3",
+        "argocd",
+        "kubernetes",
+        "docker-compose",
+        "regex"
+    ],
+    "helm-values": {
+        "fileMatch": [
+            "app-of-apps/apps/.+/values\\.yaml$"
+        ]
+    },
+    "argocd": {
+        "fileMatch": [
+            "app-of-apps/apps/.+/application\\.yaml$",
+            "app-of-apps/bootstrap/application\\.yaml$"
+        ]
+    },
+    "kubernetes": {
+        "fileMatch": [
+            "app-of-apps/apps/.+/manifests/.+\\.yaml$"
+        ]
+    },
+    "packageRules": [
+        {
+            "description": "Automerge patch updates for core infrastructure (kyverno, traefik, cert-manager, csi-driver-nfs)",
+            "matchPackageNames": [
+                "kyverno",
+                "traefik",
+                "cert-manager",
+                "csi-driver-nfs",
+                "reflector"
+            ],
+            "matchUpdateTypes": [
+                "patch"
+            ],
+            "automerge": true,
+            "automergeType": "pr",
+            "automergeStrategy": "squash"
+        },
+        {
+            "description": "Manual review for security infrastructure (vault, external-secrets)",
+            "matchPackageNames": [
+                "vault",
+                "external-secrets"
+            ],
+            "matchUpdateTypes": [
+                "minor",
+                "patch"
+            ],
+            "automerge": false,
+            "labels": [
+                "renovate",
+                "security-infra",
+                "requires-review"
+            ]
+        },
+        {
+            "description": "Manual review for stateful components (harbor, keycloak, minio, postgres)",
+            "matchPackageNames": [
+                "harbor",
+                "quay.io/keycloak/keycloak",
+                "minio/minio",
+                "postgres"
+            ],
+            "matchUpdateTypes": [
+                "minor",
+                "patch"
+            ],
+            "automerge": false,
+            "labels": [
+                "renovate",
+                "stateful",
+                "requires-review"
+            ]
+        },
+        {
+            "description": "Manual review for Argo CD / Argo Workflows due to API breaking risk",
+            "matchPackageNames": [
+                "argo-cd",
+                "argo-workflows"
+            ],
+            "matchUpdateTypes": [
+                "minor",
+                "patch"
+            ],
+            "automerge": false,
+            "labels": [
+                "renovate",
+                "cicd",
+                "requires-review"
+            ]
+        },
+        {
+            "description": "Automerge patch updates for Prometheus stack, manual review for minor updates",
+            "matchPackageNames": [
+                "kube-prometheus-stack"
+            ],
+            "matchUpdateTypes": [
+                "patch"
+            ],
+            "automerge": true,
+            "automergeType": "pr",
+            "automergeStrategy": "squash"
+        },
+        {
+            "description": "Manual review required for major version updates",
+            "matchUpdateTypes": [
+                "major"
+            ],
+            "automerge": false,
+            "labels": [
+                "renovate",
+                "major-update",
+                "requires-review"
+            ]
+        },
+        {
+            "description": "Immediate PR for security vulnerabilities (ignoring schedule)",
+            "matchCategories": [
+                "security"
+            ],
+            "schedule": [
+                "at any time"
+            ],
+            "labels": [
+                "renovate",
+                "security"
+            ]
+        },
+        {
+            "description": "Automerge Renovate's own Helm chart updates",
+            "matchPackageNames": [
+                "renovate"
+            ],
+            "matchManagers": [
+                "argocd"
+            ],
+            "matchUpdateTypes": [
+                "minor",
+                "patch"
+            ],
+            "automerge": true,
+            "automergeType": "pr",
+            "automergeStrategy": "squash"
+        }
+    ],
+    "prConcurrentLimit": 5,
+    "prHourlyLimit": 2,
+    "labels": [
+        "renovate"
+    ],
+    "reviewers": [],
+    "assignees": []
+}

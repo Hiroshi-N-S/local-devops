@@ -1,0 +1,55 @@
+---
+# Renovate Helm Chart Values
+# refs:
+#   - https://github.com/renovatebot/helm-charts/blob/main/charts/renovate/values.yaml
+
+cronjob:
+  # -- Schedules the job to run using cron notation
+  schedule: '0 * * * *' # Every hour
+  # -- You can specify a time zone for a CronJob by setting timeZone to the name of a valid time zone. (starting with k8s 1.27) <https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/#time-zones>
+  timeZone: 'Asia/Tokyo' # see https://en.wikipedia.org/wiki/List_of_tz_database_time_zones for valid names
+  # -- If it is set to true, all subsequent executions are suspended. This setting does not apply to already started executions.
+  suspend: false
+  # -- "Allow" to allow concurrent runs, "Forbid" to skip new runs if a previous run is still running or "Replace" to replace the previous run
+  concurrencyPolicy: Forbid
+  # -- Amount of failed jobs to keep in history
+  failedJobsHistoryLimit: 1
+  # -- Amount of completed jobs to keep in history
+  successfulJobsHistoryLimit: 3
+  # -- Set to Never to restart the job when the pod fails or to OnFailure to restart when a container fails
+  jobRestartPolicy: Never
+
+renovate:
+  # -- Custom exiting global renovate config
+  existingConfigFile: "/usr/src/app/config.json"
+
+  # Instead of a file system cache, it is highly recommended to use SQLite.
+  # Take a look at https://github.com/renovatebot/renovate/discussions/30525 for more information.
+  # -- Options related to persistence
+  persistence:
+    cache:
+      # -- Allow the cache to persist between runs
+      enabled: false
+
+# -- Additional volumeMounts to the container
+extraVolumeMounts:
+  - name: renovate-config-vol
+    mountPath: /usr/src/app/config.json
+    subPath: config.json
+    readOnly: true
+
+# -- Additional volumes to the pod
+extraVolumes:
+  - name: renovate-config-vol
+    secret:
+      secretName: renovate-config
+
+# -- Environment variables to add from existing secrets/configmaps. Uses the keys as variable name
+envFrom:
+  - secretRef:
+      name: renovate-github-token-env
+
+# -- Environment variables to set on the renovate container
+env:
+  - name: LOG_LEVEL
+    value: "debug"

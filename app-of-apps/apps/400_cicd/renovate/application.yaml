@@ -6,10 +6,10 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: devops-argo-workflows
+  name: devops-renovate
   namespace: devops-system
   annotations:
-    argocd.argoproj.io/sync-wave: "420"
+    argocd.argoproj.io/sync-wave: "430"
   finalizers:
     - argocd.argoproj.io/resources-finalizer
 spec:
@@ -25,12 +25,12 @@ spec:
       - CreateNamespace=true
       - ServerSideApply=true
   sources:
-    - chart: argo-workflows
-      repoURL: https://argoproj.github.io/argo-helm
-      targetRevision: 1.0.6
+    - chart: renovate
+      repoURL: oci://ghcr.io/renovatebot/charts/renovate
+      targetRevision: 46.154.3
       helm:
         valueFiles:
-          - $valueFiles/app-of-apps/apps/400_cicd/argo-workflows/values.yaml
+          - $valueFiles/app-of-apps/apps/400_cicd/renovate/values.yaml
     - ref: valueFiles
       repoURL: https://github.com/Hiroshi-N-S/local-devops.git
       targetRevision: feat/renovate
@@ -39,10 +39,10 @@ spec:
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: devops-argo-workflows-externalsecrets
+  name: devops-renovate-externalsecrets
   namespace: devops-system
   annotations:
-    argocd.argoproj.io/sync-wave: "420"
+    argocd.argoproj.io/sync-wave: "430"
   finalizers:
     - argocd.argoproj.io/resources-finalizer
 spec:
@@ -58,6 +58,6 @@ spec:
       - CreateNamespace=true
       - ServerSideApply=true
   sources:
-    - path: app-of-apps/apps/400_cicd/argo-workflows/manifests
+    - path: app-of-apps/apps/400_cicd/renovate/manifests
       repoURL: https://github.com/Hiroshi-N-S/local-devops.git
       targetRevision: feat/renovate
