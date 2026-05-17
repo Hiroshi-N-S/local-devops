@@ -181,6 +181,9 @@ controller:
       # you can find more information about those ssl options here: https://godoc.org/github.com/lib/pq
       sslMode: disable
 
+  # -- The number of controller pods to run
+  replicas: 2
+
 # -- Use static credentials for S3 (eg. when not using AWS IRSA)
 useStaticCredentials: false
 artifactRepository:
