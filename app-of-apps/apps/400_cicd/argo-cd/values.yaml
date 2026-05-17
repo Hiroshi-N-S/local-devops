@@ -101,6 +101,11 @@ server:
           - secret:
               name: local-devenv-tls
 
+## Dex
+dex:
+  # -- Enable dex
+  enabled: false
+
 ## Repo Server
 repoServer:
   # -- envFrom to pass to repo server
@@ -108,3 +113,8 @@ repoServer:
   envFrom:
     - secretRef:
         name: proxy-env
+
+## Notifications controller
+notifications:
+  # -- Enable notifications controller
+  enabled: false
