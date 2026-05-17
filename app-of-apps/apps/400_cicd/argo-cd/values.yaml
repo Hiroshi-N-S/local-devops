@@ -113,8 +113,3 @@ repoServer:
   envFrom:
     - secretRef:
         name: proxy-env
-
-## Notifications controller
-notifications:
-  # -- Enable notifications controller
-  enabled: false
