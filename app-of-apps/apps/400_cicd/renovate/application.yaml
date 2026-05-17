@@ -27,7 +27,7 @@ spec:
   sources:
     - path: '.'
       repoURL: oci://ghcr.io/renovatebot/charts/renovate
-      targetRevision: 46.154.3
+      targetRevision: 46.155.2
       helm:
         valueFiles:
           - $valueFiles/app-of-apps/apps/400_cicd/renovate/values.yaml
