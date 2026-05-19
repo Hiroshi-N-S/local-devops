@@ -27,7 +27,7 @@ spec:
   sources:
     - chart: argo-cd
       repoURL: https://argoproj.github.io/argo-helm
-      targetRevision: 9.3.7
+      targetRevision: 9.5.14
       helm:
         valueFiles:
           - $valueFiles/app-of-apps/apps/400_cicd/argo-cd/values.yaml
