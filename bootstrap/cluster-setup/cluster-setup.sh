@@ -23,6 +23,20 @@ NODE_HOST=${NODE_HOST:-'devenv.local'}
 . "$UTILITY_SCRIPTS_DIR/utilities.sh"
 
 #
+# Running distribution-specific configuration before installing K3s.
+#
+
+DISTRO=$(source /etc/os-release; echo "${ID}-${VERSION_ID}")
+
+if [ ! -f "$SCRIPT_DIR/distribution-configs/${DISTRO}.sh" ]; then
+  error "Unsupported distribution: ${DISTRO}"
+fi
+
+info "Running distribution-specific configuration for ${DISTRO}."
+
+. "$SCRIPT_DIR/distribution-configs/${DISTRO}.sh"
+
+#
 # Function definitions.
 #
 
