@@ -98,7 +98,7 @@ done
 VAULT_KEY_THRESHOLD=3
 VAULT_KEY_SHARES=5
 
-if $IS_SEALED == 'true'; then
+if [ "$IS_SEALED" == 'true' ]; then
   info "Initializing Vault."
 
   kubectl exec -n $VAULT_NAMESPACE -i $VAULT_POD_NAME -- vault operator init \
