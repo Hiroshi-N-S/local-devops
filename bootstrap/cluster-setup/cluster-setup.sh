@@ -2,7 +2,7 @@
 set -euo pipefail
 
 SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
-REPO_ROOT_DIR="$SCRIPT_DIR/../.."
+REPO_ROOT_DIR=$(cd "$SCRIPT_DIR/../.." && pwd)
 UTILITY_SCRIPTS_DIR="$REPO_ROOT_DIR/utility-scripts"
 
 APP_OF_APPS_DIR="$REPO_ROOT_DIR/app-of-apps"

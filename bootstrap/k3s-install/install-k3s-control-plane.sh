@@ -4,7 +4,7 @@ set -euo pipefail
 K3S_VERSION=${K3S_VERSION:-"v1.35.4+k3s1"}
 
 SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
-REPO_ROOT_DIR="$SCRIPT_DIR/../.."
+REPO_ROOT_DIR=$(cd "$SCRIPT_DIR/../.." && pwd)
 UTILITY_SCRIPTS_DIR="$REPO_ROOT_DIR/utility-scripts"
 
 K3S_CONFIGS_DIR="$SCRIPT_DIR/k3s-configs"
