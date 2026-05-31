@@ -1,8 +1,8 @@
 #!/bin/bash
 set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-REPO_ROOT_DIR="$(cd "$SCRIPT_DIR/../../.." && pwd)"
+SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
+REPO_ROOT_DIR=$(cd "$SCRIPT_DIR/../../.." && pwd)
 UTILITY_SCRIPTS_DIR="$REPO_ROOT_DIR/utility-scripts"
 
 VAULT_TERRAFORM_DIR="$REPO_ROOT_DIR/iac/vault"
@@ -98,7 +98,7 @@ done
 VAULT_KEY_THRESHOLD=3
 VAULT_KEY_SHARES=5
 
-if $IS_SEALED == 'true'; then
+if [ "$IS_SEALED" == 'true' ]; then
   info "Initializing Vault."
 
   kubectl exec -n $VAULT_NAMESPACE -i $VAULT_POD_NAME -- vault operator init \
@@ -123,8 +123,9 @@ if $IS_SEALED == 'true'; then
     info "Using Unseal Key $i/$VAULT_KEY_THRESHOLD to unseal Vault."
     
     VAULT_KEY="$(cat $VAULT_INITIAL_CONFIG_FILE | grep "Unseal Key $i:" | awk -F'[ ]+' '{print $4}')"
-    
-    info "Unsealing Vault with Unseal Key $i: $VAULT_KEY"
+
+    MASKED_KEY="${VAULT_KEY:0:4}...${VAULT_KEY: -4}"
+    info "Unsealing Vault with Unseal Key $i: $MASKED_KEY"
 
     kubectl exec -n $VAULT_NAMESPACE -i $VAULT_POD_NAME -- vault operator unseal $VAULT_KEY
     kubectl exec -n $VAULT_NAMESPACE -i $VAULT_POD_NAME -- vault status || true
