@@ -123,8 +123,9 @@ if [ "$IS_SEALED" == 'true' ]; then
     info "Using Unseal Key $i/$VAULT_KEY_THRESHOLD to unseal Vault."
     
     VAULT_KEY="$(cat $VAULT_INITIAL_CONFIG_FILE | grep "Unseal Key $i:" | awk -F'[ ]+' '{print $4}')"
-    
-    info "Unsealing Vault with Unseal Key $i: $VAULT_KEY"
+
+    MASKED_KEY="${VAULT_KEY:0:4}...${VAULT_KEY: -4}"
+    info "Unsealing Vault with Unseal Key $i: $MASKED_KEY"
 
     kubectl exec -n $VAULT_NAMESPACE -i $VAULT_POD_NAME -- vault operator unseal $VAULT_KEY
     kubectl exec -n $VAULT_NAMESPACE -i $VAULT_POD_NAME -- vault status || true
