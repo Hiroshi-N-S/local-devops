@@ -63,6 +63,9 @@
                 "patch"
             ],
             "automerge": false,
+            "reviewers": [
+                "Hiroshi-N-S"
+            ],
             "labels": [
                 "renovate",
                 "security-infra",
@@ -82,6 +85,9 @@
                 "patch"
             ],
             "automerge": false,
+            "reviewers": [
+                "Hiroshi-N-S"
+            ],
             "labels": [
                 "renovate",
                 "stateful",
@@ -99,6 +105,9 @@
                 "patch"
             ],
             "automerge": false,
+            "reviewers": [
+                "Hiroshi-N-S"
+            ],
             "labels": [
                 "renovate",
                 "cicd",
@@ -123,6 +132,9 @@
                 "major"
             ],
             "automerge": false,
+            "reviewers": [
+                "Hiroshi-N-S"
+            ],
             "labels": [
                 "renovate",
                 "major-update",
@@ -136,6 +148,9 @@
             ],
             "schedule": [
                 "at any time"
+            ],
+            "reviewers": [
+                "Hiroshi-N-S"
             ],
             "labels": [
                 "renovate",
