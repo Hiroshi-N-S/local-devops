@@ -145,6 +145,21 @@ grafana:
     #
     enabled: false
 
+## Manages Prometheus and Alertmanager components
+##
+prometheusOperator:
+  enabled: true
+
+  ## Admission webhook support for PrometheusRules resources added in Prometheus Operator 0.30 can be enabled to prevent incorrectly formatted
+  ## rules from making their way into prometheus and potentially preventing the container from starting
+  admissionWebhooks:
+    ## If enabled, generate a self-signed certificate, then patch the webhook configurations with the generated data.
+    ## On chart upgrades (or if the secret exists) the cert will not be re-generated. You can use this to provide your own
+    ## certs ahead of time if you wish.
+    ##
+    annotations:
+      "helm.sh/hook-delete-policy": "before-hook-creation,hook-succeeded"
+
 windowsMonitoring:
   ## Deploys the windows-exporter and Windows-specific dashboards and rules (job name must be 'windows-exporter')
   enabled: false
