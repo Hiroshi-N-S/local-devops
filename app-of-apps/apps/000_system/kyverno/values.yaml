@@ -21,6 +21,9 @@ features:
     # -- Restrict policy exceptions to a single namespace
     # Set to "*" to allow exceptions in all namespaces
     namespace: kyverno-system
+  forceFailurePolicyIgnore:
+    # -- Forces the webhook failure policy to 'Ignore' instead of 'Fail'
+    enabled: true
 
 # Admission controller configuration
 admissionController:
