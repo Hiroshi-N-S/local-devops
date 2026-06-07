@@ -47,9 +47,9 @@ do
   sleep 10
 done
 
-until [ -z "$(kubectl get pods -n $VAULT_NAMESPACE --no-headers | grep $VAULT_POD_NAME | awk -F'[/ ]+' '$4 != "Running"')" ]
+until [ -n "$(kubectl get pods -n $VAULT_NAMESPACE --no-headers | grep $VAULT_POD_NAME | awk -F'[/ ]+' '$4 != "Running"')" ]
 do
-  info "-> Vault is not ready yet. Retrying in 10 seconds..."
+  info " -> Vault is not ready yet. Retrying in 10 seconds..."
   sleep 10
 done
 
@@ -59,7 +59,7 @@ IS_SEALED='true'
 
 while true
 do
-  IS_SEALED=$((kubectl exec -n $VAULT_NAMESPACE -i $VAULT_POD_NAME -- vault status 2>/dev/null || true) | grep Sealed | awk -F'[ ]+' '{print $2}')
+  IS_SEALED=$(kubectl exec -n $VAULT_NAMESPACE -i $VAULT_POD_NAME -- vault status 2>/dev/null | grep Sealed | awk -F'[ ]+' '{print $2}' || true)
   case $IS_SEALED in
     'false')
       info " -> Vault is already UNSEALED."
