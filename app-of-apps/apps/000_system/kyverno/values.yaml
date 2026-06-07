@@ -20,7 +20,7 @@ features:
     enabled: true
     # -- Restrict policy exceptions to a single namespace
     # Set to "*" to allow exceptions in all namespaces
-    namespace: '*'
+    namespace: kyverno-system
 
 # Admission controller configuration
 admissionController:

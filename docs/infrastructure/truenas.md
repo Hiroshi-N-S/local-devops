@@ -288,14 +288,26 @@ echo 'devops:<PASSWORD>' | chpasswd
 To install K3s on the LXC container, use the installation script provided in the project repository.
 Ensure that the script `kubernetes/k3s/install-k3s-control-plane.sh` and its associated files (distribution-configs and k3s-configs) are copied to the container.
 
+- Copy the local-devops directory to the container:
+
+  ``` bash
+  scp -r -P 8022 local-devops devops@<devenv.local>:~
+  ``` 
+
 - SSH Login to the LXC container:
 
   ``` bash
   ssh -p 8022 devops@<devenv.local>
   ```
 
-- Run the installation script:
+- Run the installation scripts:
 
   ``` bash
-  bash <PATH_TO_THIS_REPOSITORY>/kubernetes/k3s/install-k3s-control-plane.sh
+  # Install k3s control plane
+  bash ~/local-devops/bootstrap/k3s-install/install-k3s-control-plane.sh
+
+  # Install cluster setup
+  bash ~/local-devops/bootstrap/cluster-setup/cluster-setup.sh
+  # or
+  NODE_IP=<IP_ADDRESS> bash ~/local-devops/bootstrap/cluster-setup/cluster-setup.sh
   ```
