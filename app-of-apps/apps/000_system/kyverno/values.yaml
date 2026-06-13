@@ -20,7 +20,7 @@ features:
     enabled: true
     # -- Restrict policy exceptions to a single namespace
     # Set to "*" to allow exceptions in all namespaces
-    namespace: kyverno-system
+    namespace: devops-system
   forceFailurePolicyIgnore:
     # -- Forces the webhook failure policy to 'Ignore' instead of 'Fail'
     enabled: true
