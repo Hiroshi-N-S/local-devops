@@ -45,7 +45,7 @@ ingress:
   # -- Additional annotations for the Ingress resource.
   annotations:
     kubernetes.io/ingress.class: traefik
-    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
 
   # The list of hostnames to be covered with this ingress record.
   hosts:
