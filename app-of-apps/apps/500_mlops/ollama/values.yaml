@@ -1,0 +1,78 @@
+---
+# Ollama parameters
+ollama:
+  # Port Ollama is listening on
+  port: 11434
+
+  gpu:
+    # -- Enable GPU integration
+    enabled: false
+
+    # -- GPU type: 'nvidia' or 'amd'
+    type: amd
+
+    # -- Specify the number of GPU to 1
+    number: 1
+
+  models:
+    # -- List of models to pull at container startup
+    pull:
+      - gemma4:12b
+
+    # -- List of models to load in memory at container startup
+    run:
+      - gemma4:12b
+
+# Configure the ingress resource that allows you to access the service
+ingress:
+  # -- Enable ingress controller resource
+  enabled: true
+
+  # -- IngressClass that will be used to implement the Ingress (Kubernetes 1.18+)
+  className: traefik
+
+  # -- Additional annotations for the Ingress resource.
+  annotations:
+    kubernetes.io/ingress.class: traefik
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+
+  # The list of hostnames to be covered with this ingress record.
+  hosts:
+    - host: ollama.devenv.local
+      paths:
+        - path: /
+          pathType: Prefix
+
+# -- Container Security Context
+securityContext:
+  capabilities:
+    drop:
+      - ALL
+  runAsNonRoot: true
+  runAsUser: 1000
+
+# -- Pod Security Context
+podSecurityContext:
+  supplementalGroups:
+    - 107
+
+# -- Additional environments variables on the output Deployment definition.
+# For extra OLLAMA env, please refer to https://github.com/ollama/ollama/blob/main/envconfig/config.go
+extraEnv:
+  - name: OLLAMA_LLM_LIBRARY
+    value: vulkan
+  - name: GGML_VK_VISIBLE_DEVICES
+    value: '0'
+  - name: OLLAMA_IGPU_ENABLE
+    value: '1'
+
+# -- Additional volumeMounts on the output Deployment definition.
+volumeMounts:
+  - name: dri-device
+    mountPath: /dev/dri
+
+# -- Additional volumes on the output Deployment definition.
+volumes:
+  - name: dri-device
+    hostPath:
+      path: /dev/dri

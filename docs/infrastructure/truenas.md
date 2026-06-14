@@ -15,9 +15,11 @@
       - [Configuring the Container for K3s](#configuring-the-container-for-k3s)
           - [Relaxing AppArmor security policy](#relaxing-apparmor-security-policy)
           - [Enabling NFS Mounts](#enabling-nfs-mounts)
+          - [Enabling GPU for the container](#enabling-gpu-for-the-container)
       - [Initializing the LXC container](#initializing-the-lxc-container)
         - [Static IP Configuration](#static-ip-configuration)
         - [Installing necessary packages](#installing-necessary-packages)
+          - [Install AMD GPU drivers to allow k3s to utilize the GPU](#install-amd-gpu-drivers-to-allow-k3s-to-utilize-the-gpu)
         - [Creating a non-root user](#creating-a-non-root-user)
     - [Setting up a Kubernetes Cluster with K3s on the LXC container](#setting-up-a-kubernetes-cluster-with-k3s-on-the-lxc-container)
 
@@ -243,6 +245,12 @@ sudo incus config set k3s-control-plane security.syscalls.intercept.mount=true
 sudo incus config set k3s-control-plane security.syscalls.intercept.mount.allowed=nfs,rpc_pipefs
 ```
 
+###### Enabling GPU for the container
+
+``` bash
+sudo incus config device add k3s-control-plane gpu0 unix-char path=/dev/dri/renderD128 mode=0660 gid=107
+```
+
 #### Initializing the LXC container
 
 Open a Container Shell session for command-line interaction with the container,
@@ -273,6 +281,18 @@ References:
 apt update && apt upgrade -y && apt install -y --no-install-recommends \
   sudo \
   openssh-server
+```
+
+###### Install AMD GPU drivers to allow k3s to utilize the GPU
+
+``` bash
+sed -ie 's|trixie main contrib$|trixie main contrib non-free non-free-firmware|g' /etc/apt/sources.list
+
+apt update && apt install -y --no-install-recommends \
+  firmware-amd-graphics \
+  mesa-vulkan-drivers \
+  libgl1-mesa-dri \
+  libglx-mesa0
 ```
 
 ##### Creating a non-root user
