@@ -1,4 +1,15 @@
 ---
+# Docker image
+image:
+  # -- Docker image registry
+  repository: ollama/ollama
+
+  # -- Docker pull policy
+  pullPolicy: IfNotPresent
+
+  # -- Docker image tag, overrides the image tag whose default is the chart appVersion.
+  tag: 0.30.8
+
 # Ollama parameters
 ollama:
   # Port Ollama is listening on
@@ -64,6 +75,12 @@ extraEnv:
   - name: GGML_VK_VISIBLE_DEVICES
     value: '0'
   - name: OLLAMA_IGPU_ENABLE
+    value: '1'
+  - name: OLLAMA_FLASH_ATTENTION
+    value: '1'
+  - name: OLLAMA_KV_CACHE_TYPE
+    value: q8_0
+  - name: OLLAMA_DEBUG
     value: '1'
 
 # -- Additional volumeMounts on the output Deployment definition.
