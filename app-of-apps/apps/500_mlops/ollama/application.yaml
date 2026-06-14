@@ -33,4 +33,4 @@ spec:
           - $valueFiles/app-of-apps/apps/500_mlops/ollama/values.yaml
     - ref: valueFiles
       repoURL: https://github.com/Hiroshi-N-S/local-devops.git
-      targetRevision: feat/ollama
+      targetRevision: develop
