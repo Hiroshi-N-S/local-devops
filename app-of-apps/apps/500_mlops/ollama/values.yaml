@@ -28,11 +28,11 @@ ollama:
   models:
     # -- List of models to pull at container startup
     pull:
-      - gemma4:12b
+      - gemma4:26b-a4b-it-qat
 
     # -- List of models to load in memory at container startup
     run:
-      - gemma4:12b
+      - gemma4:26b-a4b-it-qat
 
 # Configure the ingress resource that allows you to access the service
 ingress:
