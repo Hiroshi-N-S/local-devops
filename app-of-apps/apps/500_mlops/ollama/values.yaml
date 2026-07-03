@@ -30,6 +30,7 @@ ollama:
     pull:
       - gemma4:e2b-it-qat
       - gemma4:26b-a4b-it-qat
+      - ornith:35b
 
     # -- List of models to load in memory at container startup
     run: []
