@@ -86,11 +86,16 @@ extraEnv:
 
 # -- Additional volumeMounts on the output Deployment definition.
 volumeMounts:
+  - name: kfd-device
+    mountPath: /dev/kfd
   - name: dri-device
     mountPath: /dev/dri
 
 # -- Additional volumes on the output Deployment definition.
 volumes:
+  - name: kfd-device
+    hostPath:
+      path: /dev/kfd
   - name: dri-device
     hostPath:
       path: /dev/dri

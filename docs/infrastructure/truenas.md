@@ -249,6 +249,7 @@ sudo incus config set k3s-control-plane security.syscalls.intercept.mount.allowe
 
 ``` bash
 sudo incus config device add k3s-control-plane gpu0 unix-char path=/dev/dri/renderD128 mode=0660 gid=107
+sudo incus config device add k3s-control-plane kfd0 unix-char path=/dev/kfd mode=0660 gid=107
 ```
 
 #### Initializing the LXC container
