@@ -71,8 +71,8 @@ The primary purpose in this section is ensuring that other critical applications
   cat <<EOF | sudo tee /mnt/ssd-pool/Scripts/PostInit/set_zfs_arc_max.sh
   #!/bin/sh
 
-  # 16 GiB
-  echo 17179869184 > /sys/module/zfs/parameters/zfs_arc_max
+  # 12 GiB
+  echo 12884901888 > /sys/module/zfs/parameters/zfs_arc_max
   EOF
 
   sudo chmod +x /mnt/ssd-pool/Scripts/PostInit/set_zfs_arc_max.sh
