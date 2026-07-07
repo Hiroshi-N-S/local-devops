@@ -27,7 +27,7 @@ spec:
   sources:
     - chart: ollama
       repoURL: https://helm.otwld.com/
-      targetRevision: 1.64.0
+      targetRevision: 1.65.0
       helm:
         valueFiles:
           - $valueFiles/app-of-apps/apps/500_mlops/ollama/values.yaml
