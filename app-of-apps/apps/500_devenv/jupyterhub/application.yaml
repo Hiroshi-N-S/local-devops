@@ -60,4 +60,4 @@ spec:
   sources:
     - path: app-of-apps/apps/500_devenv/jupyterhub/manifests
       repoURL: https://github.com/Hiroshi-N-S/local-devops.git
-      targetRevision: feat/jupyterhub
+      targetRevision: develop
