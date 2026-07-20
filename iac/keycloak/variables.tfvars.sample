@@ -110,7 +110,7 @@ realms = {
           }
         }
       }
-            "prometheus-grafana" = {
+      "prometheus-grafana" = {
         name                            = "prometheus-grafana"
         description                     = "Prometheus & Grafana Client"
 
@@ -213,6 +213,7 @@ realms = {
         }
       }
     }
+    vault_kv_v2_mount_path = "<SAMPLE>"
   }
 }
 
@@ -225,4 +226,13 @@ provider_config = {
   client_secret = "<SAMPLE>"
   url           = "https://auth.devenv.local:8443"
   tls_insecure  = true
+}
+
+#
+# Vault Provider Configuration
+#
+
+vault_provider_config = {
+  url             = "https://vault.devenv.local:8443"
+  skip_tls_verify = true
 }
