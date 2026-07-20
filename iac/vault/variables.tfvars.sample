@@ -50,6 +50,14 @@ kubernetes_auth = {
           "OAUTH_CLIENT_ID"     = "<SAMPLE>"
           "OAUTH_CLIENT_SECRET" = "random_password://jupyterhub-clientsecret"
         }
+        renovate-github-token-env = {
+          "RENOVATE_TOKEN" = "<SAMPLE>"
+        }
+        renovate-config = {
+          "config.json" = <<-EOT
+            <SAMPLE>
+            EOT
+        }
         argoworkflows-registry-credential = {
           ".dockerconfigjson"          = <<-EOT
             {

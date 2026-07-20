@@ -72,6 +72,10 @@ server:
     # -- Enable an ingress resource for the Argo CD server
     enabled: true
 
+    # -- Specific implementation for ingress controller. One of `generic`, `aws` or `gke`
+    ## Additional configuration might be required in related configuration sections
+    controller: generic
+
     # -- Additional ingress annotations
     ## Ref: https://argo-cd.readthedocs.io/en/stable/operator-manual/ingress/#option-1-ssl-passthrough
     annotations:
@@ -80,6 +84,10 @@ server:
 
     # -- Defines which ingress controller will implement the resource
     ingressClassName: traefik
+
+    # -- Argo CD server hostname
+    # @default -- `""` (defaults to global.domain)
+    hostname: argocd.devenv.local
 
     # -- Enable TLS configuration for the hostname defined at 'server.ingress.hostname'
     ## TLS certificate will be retrieved from a TLS secret 'argocd-server-tls'
