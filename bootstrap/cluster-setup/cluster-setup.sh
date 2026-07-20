@@ -202,10 +202,10 @@ deploy_applications() {
 
   info "Deploying the applications: DONE"
 
-  for script in $(ls -1 $SCRIPT_DIR/post-deployment-scripts/)
+  for script in $(ls $SCRIPT_DIR/post-deployment-scripts/*.sh)
   do
     info "Running $script."
-    bash $SCRIPT_DIR/post-deployment-scripts/$script
+    bash $script
     info "Running $script: DONE"
   done
 
