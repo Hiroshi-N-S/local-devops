@@ -22,6 +22,7 @@ realms = {
           admin = {
             description                 = "Admin group with all permissions"
             role_names                  = [
+              "jupyterhub-admin",
               "argo-workflows-admin",
               "argo-cd-admin",
               "consoleAdmin",
@@ -31,6 +32,7 @@ realms = {
           maintainer = {
             description                 = "Maintainer group with permissions to manage applications and resources"
             role_names                  = [
+              "jupyterhub-admin",
               "argo-workflows-admin",
               "argo-cd-admin",
               "readwrite",
@@ -40,6 +42,7 @@ realms = {
           developer = {
             description                 = "Developer group with permissions to manage applications"
             role_names                  = [
+              "jupyterhub-user",
               "argo-workflows-edit",
               "readwrite",
               "harbor-user"
@@ -57,6 +60,32 @@ realms = {
       }
     }
     clients = {
+      "jupyterhub" = {
+        name        = "jupyterhub"
+        description = "JupyterHub Client"
+
+        standard_flow_enabled        = true
+        direct_access_grants_enabled = true
+        service_accounts_enabled     = true
+
+        root_url                        = "https://notebook.devenv.local:8443"
+        base_url                        = "/"
+        valid_redirect_uris             = ["https://notebook.devenv.local:8443/*"]
+        valid_post_logout_redirect_uris = ["https://notebook.devenv.local:8443/*"]
+        web_origins                     = ["https://notebook.devenv.local:8443/"]
+        admin_url                       = "https://notebook.devenv.local:8443"
+
+        default_scopes = ["profile"]
+
+        roles = {
+          "jupyterhub-admin" = {
+            description = "Admin role for JupyterHub"
+          }
+          "jupyterhub-user" = {
+            description = "User role for JupyterHub"
+          }
+        }
+      }
       "argo-workflows" = {
         name                            = "argo-workflows"
         description                     = "Argo Workflows Client"

@@ -20,6 +20,10 @@ kubernetes_auth = {
       path                              = "data/*"
       capabilities                      = [ "read", "list" ]
       random_passwords = {
+        "jupyterhub-clientsecret" = {
+          length  = 32
+          special = false
+        }
         "argo-workflows-clientsecret" = {
           length  = 32
           special = false
@@ -42,6 +46,10 @@ kubernetes_auth = {
         }
       }
       data = {
+        jupyterhub-env = {
+          "OAUTH_CLIENT_ID"     = "<SAMPLE>"
+          "OAUTH_CLIENT_SECRET" = "random_password://jupyterhub-clientsecret"
+        }
         argoworkflows-registry-credential = {
           ".dockerconfigjson"          = <<-EOT
             {
