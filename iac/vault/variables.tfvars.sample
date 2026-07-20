@@ -19,6 +19,28 @@ kubernetes_auth = {
       description                       = "This is a KV Version 2 secret engine mount for Kubernetes secrets"
       path                              = "data/*"
       capabilities                      = [ "read", "list" ]
+      random_passwords = {
+        "argo-workflows-clientsecret" = {
+          length  = 32
+          special = false
+        }
+        "argo-cd-clientsecret" = {
+          length  = 32
+          special = false
+        }
+        "prometheus-grafana-clientsecret" = {
+          length  = 32
+          special = false
+        }
+        "minio-clientsecret" = {
+          length  = 32
+          special = false
+        }
+        "harbor-clientsecret" = {
+          length  = 32
+          special = false
+        }
+      }
       data = {
         argoworkflows-registry-credential = {
           ".dockerconfigjson"          = <<-EOT
@@ -73,7 +95,7 @@ kubernetes_auth = {
         }
         argoworkflows-sso = {
           "client_id"                   = "<SAMPLE>"
-          "client_secret"               = "<SAMPLE>"
+          "client_secret"               = "random_password:argo-workflows-clientsecret"
         }
         argoworkflows-postgres-config = {
           "POSTGRES_USER"               = "<SAMPLE>"
@@ -82,12 +104,12 @@ kubernetes_auth = {
         argocd-oidc = {
           "issuer_url"                  = "https://auth.devenv.local:8443/realms/devops"
           "client_id"                   = "<SAMPLE>"
-          "client_secret"               = "<SAMPLE>"
+          "client_secret"               = "random_password:argo-cd-clientsecret"
         }
         prometheus-grafana-oauth = {
           "GF_AUTH_GENERIC_OAUTH_NAME"                  = "KEYCLOAK"
           "GF_AUTH_GENERIC_OAUTH_CLIENT_ID"             = "<SAMPLE>"
-          "GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET"         = "<SAMPLE>"
+          "GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET"         = "random_password:prometheus-grafana-clientsecret"
           "GF_AUTH_GENERIC_OAUTH_SCOPES"                = "openid profile email realm-roles"
           "GF_AUTH_GENERIC_OAUTH_AUTH_URL"              = "https://auth.devenv.local:8443/realms/devops/protocol/openid-connect/auth"
           "GF_AUTH_GENERIC_OAUTH_TOKEN_URL"             = "https://auth.devenv.local:8443/realms/devops/protocol/openid-connect/token"
@@ -198,7 +220,7 @@ kubernetes_auth = {
           # doc: https://min.io/docs/minio/linux/operations/external-iam/configure-openid-external-identity-management.html
           "MINIO_IDENTITY_OPENID_CONFIG_URL_KEYCLOAK"    = "https://auth.devenv.local:8443/realms/devops/.well-known/openid-configuration"
           "MINIO_IDENTITY_OPENID_CLIENT_ID_KEYCLOAK"     = "<SAMPLE>"
-          "MINIO_IDENTITY_OPENID_CLIENT_SECRET_KEYCLOAK" = "<SAMPLE>"
+          "MINIO_IDENTITY_OPENID_CLIENT_SECRET_KEYCLOAK" = "random_password:minio-clientsecret"
           "MINIO_IDENTITY_OPENID_DISPLAY_NAME_KEYCLOAK"  = "KEYCLOAK"
           "MINIO_IDENTITY_OPENID_SCOPES_KEYCLOAK"        = "openid,profile,minio-authorization"
         }
