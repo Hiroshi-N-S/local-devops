@@ -61,12 +61,12 @@ resource "vault_kv_secret_v2" "kv2_secrets_engines_data" {
           data_json = jsonencode({
             for k, v in data_value :
             k => (
-              startswith(v, "file:") ? file(join("/", [
+              startswith(v, "file://") ? file(join("/", [
                 path.module,
-                replace(v, "file:", "")
+                replace(v, "file://", "")
               ])) :
-              startswith(v, "random_password:") ? random_password.kv2_secrets_engines_random_passwords[
-                "${se_key}-${replace(v, "random_password:", "")}"
+              startswith(v, "random_password://") ? random_password.kv2_secrets_engines_random_passwords[
+                "${se_key}-${replace(v, "random_password://", "")}"
               ].result :
               v
             )
