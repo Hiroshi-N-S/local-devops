@@ -1,0 +1,177 @@
+---
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: traefik
+    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
+  ingressClassName: traefik
+  hosts:
+    - notebook.devenv.local
+  pathType: Prefix
+
+# singleuser relates to the configuration of KubeSpawner which runs in the hub
+# pod, and its spawning of user pods such as jupyter-myusername.
+singleuser:
+  profileList: []
+
+  extraEnv: {}
+
+  storage:
+    type: dynamic
+    capacity: 32Gi
+    homeMountPath: /home/jovyan
+    dynamic:
+      storageClass: ssd-nfs-retain
+      pvcNameTemplate: hub-userdata-{user_server}
+      storageAccessModes:
+        - ReadWriteOnce
+
+  allowPrivilegeEscalation: false
+  uid: 1000
+  fsGid: 100
+
+  startTimeout: 300
+  cpu:
+    limit: 6
+    guarantee: 2
+  memory:
+    limit: 8G
+    guarantee: 4G
+
+# hub relates to the hub pod, responsible for running JupyterHub, its configured
+# Authenticator class KubeSpawner, and its configured Proxy class
+# ConfigurableHTTPProxy. KubeSpawner creates the user pods, and
+# ConfigurableHTTPProxy speaks with the actual ConfigurableHTTPProxy server in
+# the proxy pod.
+hub:
+  # existingSecret: hub-secret-overrides
+  config:
+    JupyterHub:
+      admin_access: false
+      authenticator_class: generic-oauth
+
+    Authenticator:
+      auto_login: false
+      enable_auth_state: true
+      allow_all: false
+
+    GenericOAuthenticator:
+      # client_id: it will be deployed via Vault secrets
+      # client_secret: it will be deployed via Vault secrets
+      oauth_callback_url: https://notebook.devenv.local:8443/hub/oauth_callback
+
+      authorize_url: https://auth.devenv.local:8443/realms/devops/protocol/openid-connect/auth
+      token_url: https://auth.devenv.local:8443/realms/devops/protocol/openid-connect/token
+      userdata_url: https://auth.devenv.local:8443/realms/devops/protocol/openid-connect/userinfo
+
+      username_claim: preferred_username
+      auth_state_groups_key: "oauth_user.groups" 
+      manage_groups: true
+      scope:
+        - openid
+        - profile
+        - realm-roles
+
+      allowed_groups:
+        - jupyterhub-user
+      admin_groups:
+        - jupyterhub-admin
+
+      tls_verify: true
+      http_request_kwargs:
+        ca_certs: /etc/ssl/certs/devenv.local.ca.crt
+
+  extraEnv:
+    - name: OAUTH_CLIENT_ID
+      valueFrom:
+        secretKeyRef:
+          name: jupyterhub-env
+          key: OAUTH_CLIENT_ID
+    - name: OAUTH_CLIENT_SECRET
+      valueFrom:
+        secretKeyRef:
+          name: jupyterhub-env
+          key: OAUTH_CLIENT_SECRET
+    - name: CURL_CA_BUNDLE
+      value: /etc/ssl/certs/devenv.local.ca.crt
+    - name: REQUESTS_CA_BUNDLE
+      value: /etc/ssl/certs/devenv.local.ca.crt
+    - name: SSL_CERT_FILE
+      value: /etc/ssl/certs/devenv.local.ca.crt
+
+  extraVolumeMounts:
+    - name: tls-certs
+      mountPath: /etc/ssl/certs/devenv.local.ca.crt
+      subPath: tls.crt
+      readOnly: true
+
+  extraVolumes:
+    - name: tls-certs
+      projected:
+        sources:
+          - secret:
+              name: local-devenv-tls
+
+  extraConfig:
+    disable-terminals: |
+      c.Spawner.args = [
+        "--ServerApp.terminals_enabled=False",
+        "--NotebookApp.terminals_enabled=False"
+      ]
+
+  service:
+    type: ClusterIP
+
+  baseUrl: /
+
+  concurrentSpawnLimit: 8
+  consecutiveFailureLimit: 3
+  activeServerLimit: 8
+
+  deploymentStrategy:
+    ## type: Recreate
+    ## - sqlite-pvc backed hubs require the Recreate deployment strategy as a
+    ##   typical PVC storage can only be bound to one pod at the time.
+    ## - JupyterHub isn't designed to support being run in parallell. More work
+    ##   needs to be done in JupyterHub itself for a fully highly available (HA)
+    ##   deployment of JupyterHub on k8s is to be possible.
+    type: Recreate
+
+  db:
+    type: sqlite-pvc
+    upgrade:
+    pvc:
+      accessModes:
+        - ReadWriteOnce
+      storage: 1Gi
+      storageClassName: local-path
+
+  podSecurityContext:
+    runAsNonRoot: true
+    fsGroup: 1000
+    seccompProfile:
+      type: "RuntimeDefault"
+
+  containerSecurityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+
+  serviceAccount:
+    create: true
+
+rbac:
+  create: true
+
+# proxy relates to the proxy pod, the proxy-public service, and the autohttps
+# pod and proxy-http service.
+proxy:
+  # service relates to the proxy-public service
+  service:
+    type: ClusterIP
+
+  https:
+    enabled: false
