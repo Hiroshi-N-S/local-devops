@@ -7,7 +7,6 @@ harbor_oidc_config = {
   provider_name     = "<SAMPLE>"
   issuer_endpoint   = "https://auth.devenv.local:8443/realms/devops"
   client_id         = "harbor"
-  client_secret     = "<SAMPLE>"
   groups_claim      = "groups"
   admin_group       = "<SAMPLE>"
   scopes            = [
@@ -16,8 +15,9 @@ harbor_oidc_config = {
     "profile",
     "<SAMPLE>"
   ]
-  verify_cert       = true
-  auto_onboard      = false
+  verify_cert            = true
+  auto_onboard           = false
+  vault_kv_v2_mount_path = "<SAMPLE>"
 }
 
 #
@@ -31,4 +31,13 @@ provider_config = {
   bearer_token = ""
   tls_insecure = false
   api_version  = 2
+}
+
+#
+# Vault Provider Configuration
+#
+
+vault_provider_config = {
+  url             = "https://vault.devenv.local:8443"
+  skip_tls_verify = false
 }
