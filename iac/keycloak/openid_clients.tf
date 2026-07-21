@@ -33,7 +33,7 @@ data "vault_kv_secret_v2" "keycloak_client_secrets" {
     ]) : i.key => i
   }
 
-  mount = "k8s-secrets"
+  mount = each.value.mount
   name  = each.value.name
 }
 
