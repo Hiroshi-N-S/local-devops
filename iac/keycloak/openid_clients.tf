@@ -26,8 +26,9 @@ data "vault_kv_secret_v2" "keycloak_client_secrets" {
     for i in flatten([
       for realm_key, realm_value in var.realms : [
         for client_key, client_value in realm_value.clients : {
-          key  = "${realm_key}-${client_key}"
-          name = "${client_key}-clientsecret"
+          key   = "${realm_key}-${client_key}"
+          name  = "${client_key}-clientsecret"
+          mount = "${realm_value.vault_kv_v2_mount_path}"
         }
       ]
     ]) : i.key => i
