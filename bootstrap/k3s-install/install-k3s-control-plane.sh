@@ -43,7 +43,8 @@ if ! command -v k3s >/dev/null 2>&1; then
 
   info "K3s is NOT installed. Installing K3s on the control plane node."
 
-  curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION="$K3S_VERSION" sh -s -
+  curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION="$K3S_VERSION" sh -s - \
+    --disable traefik
 
   mkdir -p ~/.kube
   ln -nfs /etc/rancher/k3s/k3s.yaml ~/.kube/config
