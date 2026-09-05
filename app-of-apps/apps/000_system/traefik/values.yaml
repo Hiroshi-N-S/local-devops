@@ -57,7 +57,10 @@ tlsOptions: {}
 
 # -- TLS Store are created as [TLSStore CRDs](https://doc.traefik.io/traefik/reference/routing-configuration/kubernetes/crd/tls/tlsstore/).
 # This is useful if you want to set a default certificate. See EXAMPLE.md for details.
-tlsStore: {}
+tlsStore:
+  default:
+    defaultCertificate:
+      secretName: local-devenv-tls
 
 service:
   enabled: true
