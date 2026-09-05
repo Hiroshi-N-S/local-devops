@@ -12,6 +12,16 @@ ports:
     # -- (int) See [upstream documentation](https://kubernetes.io/docs/concepts/services-networking/service/#type-nodeport)
     nodePort: 30080
 
+    http:
+      redirections:
+        # -- Port Redirections
+        # Added in 2.2, one can make permanent redirects via entrypoints.
+        # Same sets of parameters: to, scheme, permanent and priority.
+        # https://doc.traefik.io/traefik/reference/install-configuration/entrypoints/#configuration-example
+        entryPoint:
+          to: websecure
+          scheme: https
+
   websecure:
     port: 443
 
