@@ -6,7 +6,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: devops-traefik-ingress
+  name: devops-traefik
   namespace: devops-system
   annotations:
     argocd.argoproj.io/sync-wave: "0"
@@ -30,7 +30,7 @@ spec:
       targetRevision: 41.1.1
       helm:
         valueFiles:
-          - $valueFiles/app-of-apps/apps/000_system/traefik-ingress/values.yaml
+          - $valueFiles/app-of-apps/apps/000_system/traefik/values.yaml
     - ref: valueFiles
       repoURL: https://github.com/Hiroshi-N-S/local-devops.git
-      targetRevision: feat/traefik-ingress
+      targetRevision: develop
