@@ -1,0 +1,194 @@
+---
+# @schema mergeProperties: true
+ports:
+  web:
+    port: 80
+
+    exposedPort: 8080
+
+    # -- The port protocol (TCP/UDP)
+    protocol: TCP
+
+    # -- (int) See [upstream documentation](https://kubernetes.io/docs/concepts/services-networking/service/#type-nodeport)
+    nodePort: 30080
+
+    http:
+      redirections:
+        # -- Port Redirections
+        # Added in 2.2, one can make permanent redirects via entrypoints.
+        # Same sets of parameters: to, scheme, permanent and priority.
+        # https://doc.traefik.io/traefik/reference/install-configuration/entrypoints/#configuration-example
+        entryPoint:
+          to: websecure
+          scheme: https
+
+  websecure:
+    port: 443
+
+    exposedPort: 8443
+
+    # -- The port protocol (TCP/UDP)
+    protocol: TCP
+
+    # -- (int) See [upstream documentation](https://kubernetes.io/docs/concepts/services-networking/service/#type-nodeport)
+    nodePort: 30443
+
+    http:
+      tls:
+        # -- See [upstream documentation](https://doc.traefik.io/traefik/reference/install-configuration/entrypoints/#opt-http-tls)
+        # @default -- true
+        enabled: true
+
+  metrics:
+    # -- When using hostNetwork, use another port to avoid conflict with node exporter:
+    # https://github.com/prometheus/prometheus/wiki/Default-port-allocations
+    port: 9100
+
+    # -- The exposed port for this service
+    exposedPort: 9100
+
+    # -- The port protocol (TCP/UDP)
+    protocol: TCP
+
+# -- TLS Options are created as [TLSOption CRDs](https://doc.traefik.io/traefik/reference/routing-configuration/kubernetes/crd/tls/tlsoption/)
+# When using `labelSelector`, you'll need to set labels on tlsOption accordingly.
+# See EXAMPLE.md for details.
+tlsOptions: {}
+
+# -- TLS Store are created as [TLSStore CRDs](https://doc.traefik.io/traefik/reference/routing-configuration/kubernetes/crd/tls/tlsstore/).
+# This is useful if you want to set a default certificate. See EXAMPLE.md for details.
+tlsStore:
+  default:
+    defaultCertificate:
+      secretName: local-devenv-tls
+
+service:
+  enabled: true
+
+  # -- Additional entries here will be added to the Service [spec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.35/#servicespec-v1-core).
+  # Cannot contain selector or ports entries.
+  spec:
+    type: LoadBalancer
+
+# -- Only dashboard & healthcheck IngressRoute are supported.
+# It's recommended to create workloads CR outside of this Chart.
+# @default -- See _values.yaml_
+ingressRoute:
+  dashboard:
+    enabled: false
+
+ingressClass:  # @schema additionalProperties: false
+  # -- Create a default IngressClass for Traefik
+  enabled: true
+  isDefaultClass: true
+  name: traefik
+
+gateway:
+  # -- When providers.kubernetesGateway.enabled, deploy a default gateway
+  enabled: false
+
+gatewayClass:  # @schema additionalProperties: false
+  # -- When providers.kubernetesGateway.enabled and gateway.enabled, deploy a default gatewayClass
+  enabled: false
+
+api:  # @schema additionalProperties: false
+  # -- Enable the dashboard
+  dashboard: false
+
+# @schema additionalProperties: false
+providers:
+  # @schema additionalProperties: false
+  kubernetesCRD:
+    # -- Load Kubernetes IngressRoute provider
+    enabled: true
+
+    # -- Allows IngressRoute to reference resources in namespace other than theirs
+    allowCrossNamespace: true
+
+  # @schema additionalProperties: false
+  kubernetesIngress:
+    # -- Load Kubernetes Ingress provider
+    enabled: true
+
+    # -- Array of namespaces to watch. If left empty, Traefik watches all namespaces. . When using `rbac.namespaced`, it will watch helm release namespace and namespaces listed in this array.
+    namespaces: []
+
+    # IP used for Kubernetes Ingress endpoints
+    publishedService:
+      # -- Enable [publishedService](https://doc.traefik.io/traefik/reference/install-configuration/providers/kubernetes/kubernetes-ingress/#ingressendpointpublishedservice),
+      # usually with the Service provided by this Chart. It's possible to use it with an external Service using pathOverride.
+      enabled: true
+
+  # @schema additionalProperties: false
+  kubernetesGateway:
+    # -- Enable Traefik Gateway provider for Gateway API
+    enabled: false
+
+  # @schema additionalProperties: false
+  file:
+    # -- Create a file provider
+    enabled: false
+
+  # @schema additionalProperties: false
+  knative:
+    # -- Enable Knative provider
+    enabled: false
+
+# -- See [logs reference](https://doc.traefik.io/traefik/reference/install-configuration/observability/logs-and-accesslogs/)
+log:
+  # -- Set [logs format](https://doc.traefik.io/traefik/reference/install-configuration/observability/logs-and-accesslogs/#opt-log-format)
+  format: json
+
+  # By default, the level is set to INFO.
+  # -- Alternative logging levels are TRACE, DEBUG, INFO, WARN, ERROR, FATAL, and PANIC.
+  level: INFO
+
+# -- See [access logs reference](https://doc.traefik.io/traefik/reference/install-configuration/observability/logs-and-accesslogs/)
+accessLog:
+  # -- To enable access logs
+  enabled: true
+
+  # -- Set [access log format](https://doc.traefik.io/traefik/reference/install-configuration/observability/logs-and-accesslogs/#opt-accesslog-format)
+  format: json
+
+  fields:
+    headers:
+      # -- [Limit logged fields or headers](https://doc.traefik.io/traefik/observe/logs-and-access-logs/#log-fields-customization)
+      defaultMode: drop
+
+      names:
+        User-Agent: keep
+        Authorization: drop
+        Content-Type: keep
+
+persistence:
+  # -- Enable persistence using Persistent Volume Claims
+  # ref: http://kubernetes.io/docs/user-guide/persistent-volumes/.
+  # It can be used to store TLS certificates along with `certificatesResolvers.<name>.acme.storage`  option
+  enabled: false
+
+deployment:
+  # -- Enable deployment
+  enabled: true
+
+  # -- Deployment or DaemonSet
+  kind: Deployment
+
+  # -- Number of pods of the deployment (only applies when kind == Deployment).
+  # Set to null to omit spec.replicas, e.g. when an external controller (HPA/KEDA) owns scaling.
+  replicas: 2
+
+# -- [Pod Disruption Budget](https://kubernetes.io/docs/reference/kubernetes-api/policy-resources/pod-disruption-budget-v1/)
+# @default -- See _values.yaml_
+podDisruptionBudget:  # @schema additionalProperties: false
+  enabled: true
+  minAvailable: 1
+
+# -- [Resources](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) for `traefik` container.
+resources:
+  requests:
+    cpu: "100m"
+    memory: "128Mi"
+  limits:
+    cpu: "500m"
+    memory: "256Mi"
