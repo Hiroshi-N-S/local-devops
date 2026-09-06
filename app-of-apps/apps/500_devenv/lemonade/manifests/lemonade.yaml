@@ -1,0 +1,91 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: lemonade
+  labels:
+    app.kubernetes.io/name: lemonade
+    app.kubernetes.io/instance: lemonade
+  annotations:
+    kubernetes.io/ingress.class: traefik
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: lemonade.devenv.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: lemonade
+                port:
+                  name: http
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: lemonade
+  labels:
+    app.kubernetes.io/name: lemonade
+    app.kubernetes.io/instance: lemonade
+spec:
+  ports:
+    - protocol: TCP
+      port: 13305
+      targetPort: http
+      name: http
+  selector:
+    app.kubernetes.io/name: lemonade
+    app.kubernetes.io/instance: lemonade
+  type: ClusterIP
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: lemonade
+  labels:
+    app.kubernetes.io/name: lemonade
+    app.kubernetes.io/instance: lemonade
+spec:
+  serviceName: lemonade
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: lemonade
+      app.kubernetes.io/instance: lemonade
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: lemonade
+        app.kubernetes.io/instance: lemonade
+    spec:
+      securityContext:
+        runAsUser: 10001
+        runAsGroup: 999
+      containers:
+        - name: lemonade
+          image: ghcr.io/lemonade-sdk/lemonade-server:v11.8.1
+          ports:
+            - name: http
+              containerPort: 13305
+          env:
+            - name: LEMONADE_ALLOWED_ORIGINS
+              value: "*"
+          volumeMounts:
+            - name: kfd-device
+              mountPath: /dev/kfd
+              readOnly: true
+            - name: dri-device
+              mountPath: /dev/dri
+              readOnly: true
+      volumes:
+        - name: kfd-device
+          hostPath:
+            path: /dev/kfd
+        - name: dri-device
+          hostPath:
+            path: /dev/dri
