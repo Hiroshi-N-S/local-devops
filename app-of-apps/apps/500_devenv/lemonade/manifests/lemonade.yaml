@@ -76,6 +76,10 @@ spec:
             - name: LEMONADE_ALLOWED_ORIGINS
               value: "*"
           volumeMounts:
+            - name: lemonade-config
+              mountPath: /opt/lemonade/.config
+            - name: lemonade-cache
+              mountPath: /opt/lemonade/.cache
             - name: kfd-device
               mountPath: /dev/kfd
               readOnly: true
@@ -83,9 +87,34 @@ spec:
               mountPath: /dev/dri
               readOnly: true
       volumes:
+        - name: lemonade-config
+          persistentVolumeClaim:
+            claimName: lemonade-config
+        - name: lemonade-cache
+          persistentVolumeClaim:
+            claimName: lemonade-cache
         - name: kfd-device
           hostPath:
             path: /dev/kfd
         - name: dri-device
           hostPath:
             path: /dev/dri
+  volumeClaimTemplates:
+    - metadata:
+        name: lemonade-config
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 64Mi
+        storageClassName: ssd-nfs-retain
+    - metadata:
+        name: lemonade-cache
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 128Gi
+        storageClassName: ssd-nfs-retain
