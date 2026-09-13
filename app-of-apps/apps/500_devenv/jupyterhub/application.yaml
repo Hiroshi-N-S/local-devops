@@ -27,7 +27,7 @@ spec:
   sources:
     - chart: jupyterhub
       repoURL: https://jupyterhub.github.io/helm-chart/
-      targetRevision: 4.3.5
+      targetRevision: 4.4.2
       helm:
         valueFiles:
           - $valueFiles/app-of-apps/apps/500_devenv/jupyterhub/values.yaml
