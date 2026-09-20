@@ -27,4 +27,4 @@ spec:
   sources:
     - path: app-of-apps/apps/500_devenv/lemonade/manifests
       repoURL: https://github.com/Hiroshi-N-S/local-devops.git
-      targetRevision: feat/lemonade
+      targetRevision: develop
